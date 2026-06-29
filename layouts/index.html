@@ -51,7 +51,7 @@
                 <span class="tag">{{ index (split .Params.masonry ",") 0 | strings.TrimSpace }}</span>
                 <h3 class="mt-2 text-xl">{{ .Title }}</h3>
                 <p class="mt-1 text-sm text-dim">{{ .Params.cardtext }}</p>
-                <span class="mt-4 link-accent text-sm">Configure {{ partial "icon.html" "arrow-right" }}</span>
+                <span class="mt-4 link-accent text-sm">{{ if .Params.appconfig }}Configure{{ else }}Get app{{ end }} {{ partial "icon.html" "arrow-right" }}</span>
             </div>
         </a>
         {{ end }}
