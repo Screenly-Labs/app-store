@@ -24,7 +24,7 @@ disableKinds = ["taxonomy", "term", "rss", "section"]
   [params.social]
     facebook = "https://www.facebook.com/Screenly/"
     twitter = "https://twitter.com/ScreenlyApp"
-    linkedin = "https://www.linkedin.com/company-beta/10478856/"
+    linkedin = "https://www.linkedin.com/company/screenly-inc/"
     github = "https://github.com/orgs/Screenly/"
     medium = "https://news.screenly.io/"
 
