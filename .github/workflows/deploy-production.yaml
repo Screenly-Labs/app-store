@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      deployments: write
     name: Deploy to Cloudflare Pages
     steps:
       - name: Checkout
@@ -47,10 +46,8 @@ jobs:
 
       - name: Publish
         if: github.event_name != 'pull_request'
-        uses: cloudflare/pages-action@1
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: app-store-production
-          directory: public
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy public --project-name=app-store-production --branch=${{ github.ref_name }}
