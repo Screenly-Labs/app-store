@@ -1,0 +1,60 @@
+{{ define "main" }}
+
+<section class="hero">
+    <div class="wrap grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-2">
+        <div>
+            <p class="eyebrow">// Free digital signage apps</p>
+            <h1 class="mt-5 text-5xl leading-[0.95] sm:text-6xl xl:text-7xl">
+                Display anything.<br><span class="text-grad">On every screen.</span>
+            </h1>
+            <p class="mt-6 max-w-xl text-lg text-dim">
+                <strong class="font-semibold text-ink">Free</strong>, vendor-agnostic digital signage
+                apps. Pick one, copy the link, and run it on any smart TV or signage player —
+                free and open-source with <strong class="font-semibold text-ink">Anthias</strong>, or
+                fully managed with <strong class="font-semibold text-ink">Screenly</strong>.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a class="btn-primary" href="#apps">Browse apps {{ partial "icon.html" "arrow-right" }}</a>
+                <a class="btn-ghost" href="#run">Run it your way</a>
+            </div>
+            <ul class="mt-10 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+                <li>✓ Free &amp; open-source option</li>
+                <li>✓ No vendor lock-in</li>
+                <li>✓ Any TV or player</li>
+            </ul>
+        </div>
+
+        <div class="relative">
+            <div class="overflow-hidden rounded-2xl border border-line-2 shadow-2xl" style="box-shadow:0 40px 80px -30px rgb(122 90 248 / 55%)">
+                {{ partial "optimg.html" (dict "src" "img/hero-3.jpg" "alt" "Screenly running on a display" "widths" (slice 640 960 1280) "sizes" "(min-width:1024px) 40vw, 90vw" "loading" "eager") }}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="apps" class="wrap scroll-mt-20 py-16 sm:py-20">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="eyebrow">Apps / {{ printf "%02d" (len .Site.RegularPages) }}</p>
+            <h2 class="mt-2 text-3xl sm:text-4xl">The app library</h2>
+        </div>
+        <div class="app-filter" data-app-filter role="group" aria-label="Filter apps by category"></div>
+    </div>
+
+    <div class="app-grid mt-10" data-app-grid>
+        {{ range .Site.RegularPages.ByWeight }}
+        <a class="card-screen reveal" href="{{ .RelPermalink }}" data-categories="{{ .Params.masonry }}">
+            <div class="card-screen__media">
+                {{ partial "optimg.html" (dict "src" (printf "img/%s" .Params.app.image) "alt" .Title "widths" (slice 400 800) "sizes" "(min-width:1024px) 360px, (min-width:640px) 45vw, 90vw") }}
+            </div>
+            <div class="card-screen__body">
+                <span class="tag">{{ index (split .Params.masonry ",") 0 | strings.TrimSpace }}</span>
+                <h3 class="mt-2 text-xl">{{ .Title }}</h3>
+                <p class="mt-1 text-sm text-dim">{{ .Params.cardtext }}</p>
+                <span class="mt-4 link-accent text-sm">Configure {{ partial "icon.html" "arrow-right" }}</span>
+            </div>
+        </a>
+        {{ end }}
+    </div>
+</section>
+{{ end }}

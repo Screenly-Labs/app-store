@@ -1,0 +1,73 @@
+{{- /* SEO meta: canonical, description, Open Graph, Twitter cards, JSON-LD. */ -}}
+{{- $title := cond .IsHome (printf "%s for Any Screen" .Site.Title) (printf "%s - %s" .Title .Site.Title) -}}
+{{- $desc := or .Description .Site.Params.description -}}
+
+{{- /* Build a correctly-sized (1200x630) social share image from the page's image. */ -}}
+{{- $ogsrc := .Site.Params.ogimage -}}
+{{- with .Params.app }}{{ with .image }}{{ $ogsrc = printf "img/%s" . }}{{ end }}{{ end -}}
+{{- $ogimage := "" }}{{ $ogw := 1200 }}{{ $ogh := 630 -}}
+{{- with resources.Get $ogsrc }}{{ $f := .Fill "1200x630 jpg q82" }}{{ $ogimage = $f.Permalink }}{{ end -}}
+
+        <link rel="canonical" href="{{ .Permalink }}">
+        <meta name="description" content="{{ $desc }}">
+        <meta name="robots" content="index, follow">
+
+        <!-- Open Graph -->
+        <meta property="og:site_name" content="{{ .Site.Params.brand }}">
+        <meta property="og:type" content="{{ cond .IsHome "website" "article" }}">
+        <meta property="og:title" content="{{ $title }}">
+        <meta property="og:description" content="{{ $desc }}">
+        <meta property="og:url" content="{{ .Permalink }}">
+        <meta property="og:locale" content="en_US">
+        {{ with $ogimage }}
+        <meta property="og:image" content="{{ . }}">
+        <meta property="og:image:type" content="image/jpeg">
+        <meta property="og:image:width" content="{{ $ogw }}">
+        <meta property="og:image:height" content="{{ $ogh }}">
+        <meta property="og:image:alt" content="{{ $title }}">
+        {{ end }}
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="{{ .Site.Params.twitter_handle }}">
+        <meta name="twitter:title" content="{{ $title }}">
+        <meta name="twitter:description" content="{{ $desc }}">
+        {{ with $ogimage }}<meta name="twitter:image" content="{{ . }}">
+        <meta name="twitter:image:alt" content="{{ $title }}">{{ end }}
+
+        {{- if .IsHome }}
+        <script type="application/ld+json">
+        {{- dict
+            "@context" "https://schema.org"
+            "@type" "Organization"
+            "name" .Site.Params.brand
+            "url" .Site.BaseURL
+            "logo" (absURL "img/logo-dark.png")
+            "sameAs" (slice .Site.Params.social.github .Site.Params.social.linkedin)
+            | jsonify (dict "indent" "  ") | safeJS }}
+        </script>
+        {{- else }}
+        <script type="application/ld+json">
+        {{- dict
+            "@context" "https://schema.org"
+            "@type" "SoftwareApplication"
+            "name" .Title
+            "description" $desc
+            "applicationCategory" "BusinessApplication"
+            "operatingSystem" "Web, Anthias, Screenly"
+            "url" .Permalink
+            "image" $ogimage
+            "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD")
+            "publisher" (dict "@type" "Organization" "name" .Site.Params.brand "url" .Site.BaseURL)
+            | jsonify (dict "indent" "  ") | safeJS }}
+        </script>
+        <script type="application/ld+json">
+        {{- dict
+            "@context" "https://schema.org"
+            "@type" "BreadcrumbList"
+            "itemListElement" (slice
+                (dict "@type" "ListItem" "position" 1 "name" "Home" "item" .Site.BaseURL)
+                (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink))
+            | jsonify (dict "indent" "  ") | safeJS }}
+        </script>
+        {{- end }}

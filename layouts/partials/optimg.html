@@ -1,0 +1,29 @@
+{{- /*
+  Optimized responsive image via Hugo's image pipeline.
+  Params:
+    src      (required) path under assets/, e.g. "img/app-weather.jpg"
+    alt      (required) alt text
+    widths   (optional) slice of pixel widths for the srcset, ascending
+    sizes    (optional) the `sizes` attribute (default "100vw")
+    class    (optional) class attribute
+    loading  (optional) "lazy" | "eager" (default "lazy")
+*/ -}}
+{{- $r := resources.Get .src -}}
+{{- if $r -}}
+  {{- $widths := .widths | default (slice 480 960 1440) -}}
+  {{- $largest := index $widths (sub (len $widths) 1) -}}
+  {{- $srcset := slice -}}
+  {{- range $widths -}}
+    {{- $v := $r.Process (printf "resize %dx webp q82" .) -}}
+    {{- $srcset = $srcset | append (printf "%s %dw" $v.RelPermalink .) -}}
+  {{- end -}}
+  {{- $base := $r.Process (printf "resize %dx webp q82" $largest) -}}
+  <img
+    src="{{ $base.RelPermalink }}"
+    srcset="{{ delimit $srcset ", " }}"
+    sizes="{{ .sizes | default "100vw" }}"
+    width="{{ $base.Width }}" height="{{ $base.Height }}"
+    alt="{{ .alt }}"
+    loading="{{ .loading | default "lazy" }}" decoding="async"
+    {{ with .class }}class="{{ . }}"{{ end }}>
+{{- end -}}
