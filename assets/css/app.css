@@ -5,7 +5,7 @@
 @source "../../content";
 
 /* ----------------------------------------------------------------------------
-   Design tokens — "Video Wall" system (exposed as Tailwind theme + CSS vars)
+   Design tokens: "Video Wall" system (exposed as Tailwind theme + CSS vars)
 ---------------------------------------------------------------------------- */
 @theme {
   --color-bg: #0c0a14;        /* page canvas (near-black indigo) */
@@ -128,7 +128,7 @@
   .brand__name { @apply font-display text-lg font-bold leading-none; }
   .brand__sub { @apply text-dim font-normal; }
 
-  /* App "screen" card — the signature element */
+  /* App "screen" card: the signature element */
   .card-screen {
     @apply block overflow-hidden rounded-2xl border border-line bg-surface transition-all duration-300;
   }

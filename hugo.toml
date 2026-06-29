@@ -1,10 +1,10 @@
-baseURL = "https://app-store.srly.io/"
+baseURL = "https://signage-apps.com/"
 languageCode = "en-us"
 title = "Free Digital Signage Apps"
 enableRobotsTXT = true
 enableGitInfo = true
 
-# No blog/taxonomies/section listings on this site — keep the output minimal.
+# No blog/taxonomies/section listings on this site. Keep the output minimal.
 disableKinds = ["taxonomy", "term", "rss", "section"]
 
 # Populate <lastmod> in Hugo's generated sitemap: prefer the git commit date,

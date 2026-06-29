@@ -1,7 +1,7 @@
 {
   "name": "screenly-app-store",
   "version": "1.0.0",
-  "description": "Free digital signage apps — static site (Hugo + Bun)",
+  "description": "Free digital signage apps, static site (Hugo + Bun)",
   "private": true,
   "license": "AGPL-3.0-only",
   "type": "module",
