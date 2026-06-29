@@ -1,0 +1,66 @@
+baseURL = "https://app-store.srly.io/"
+languageCode = "en-us"
+title = "Free Digital Signage Apps"
+enableRobotsTXT = true
+enableGitInfo = true
+
+# No blog/taxonomies/section listings on this site — keep the output minimal.
+disableKinds = ["taxonomy", "term", "rss", "section"]
+
+# Populate <lastmod> in Hugo's generated sitemap: prefer the git commit date,
+# fall back to the file modification time so it is always present.
+[frontmatter]
+  lastmod = ["lastmod", ":git", "date", ":fileModTime"]
+
+[params]
+  brand = "Screenly"
+  tagline = "Run free on Anthias, or managed with Screenly"
+  description = "Free, vendor-agnostic digital signage apps for any smart TV or signage player. Run them free and open-source with Anthias, or fully managed with Screenly."
+  email = "hello@screenly.io"
+  # Default image used for social sharing (Open Graph / Twitter cards).
+  ogimage = "img/hero-3.jpg"
+  twitter_handle = "@ScreenlyApp"
+
+  [params.social]
+    facebook = "https://www.facebook.com/Screenly/"
+    twitter = "https://twitter.com/ScreenlyApp"
+    linkedin = "https://www.linkedin.com/company-beta/10478856/"
+    github = "https://github.com/orgs/Screenly/"
+    medium = "https://news.screenly.io/"
+
+[markup.goldmark.renderer]
+  # The app description pages contain inline HTML (links, etc.).
+  unsafe = true
+
+[build]
+  # Bundle JS with Hugo's esbuild (resolves Bun-installed node_modules).
+  [build.buildStats]
+    enable = false
+
+# Mounts: keep the standard roots and self-host fonts straight from the
+# Bun-managed @fontsource packages (no remote font requests).
+[module]
+  [[module.mounts]]
+    source = "assets"
+    target = "assets"
+  [[module.mounts]]
+    source = "content"
+    target = "content"
+  [[module.mounts]]
+    source = "layouts"
+    target = "layouts"
+  [[module.mounts]]
+    source = "static"
+    target = "static"
+  [[module.mounts]]
+    source = "node_modules/@fontsource/open-sans/files"
+    target = "static/fonts/open-sans"
+    files = "*latin-[0-9]*.woff2"
+  [[module.mounts]]
+    source = "node_modules/@fontsource/space-grotesk/files"
+    target = "static/fonts/space-grotesk"
+    files = "*latin-[0-9]*.woff2"
+  [[module.mounts]]
+    source = "node_modules/@fontsource/space-mono/files"
+    target = "static/fonts/space-mono"
+    files = "*latin-[0-9]*.woff2"

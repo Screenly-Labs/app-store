@@ -1,0 +1,36 @@
+---
+title: Weather
+description: A live weather display with the location and clock format you choose.
+cardtext: Live local weather for any display.
+masonry: Weather, Clock
+bodyclass: product
+appconfig: true
+weight: 2
+app:
+  url: https://weather.srly.io/
+  image: app-weather.jpg
+links:
+  support: https://github.com/Screenly-Labs/weather-app/issues
+  source: https://github.com/Screenly-Labs/weather-app
+---
+
+<div id="config">
+    <h2 class="text-2xl">Weather settings</h2>
+    <p class="mt-1 text-dim">Drag the map to pick the location you want to show.</p>
+
+    <div class="relative mt-5">
+        <div id="config-map"></div>
+        <span class="marker text-3xl">
+            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </span>
+    </div>
+
+    <div class="mt-5">
+        <label class="eyebrow" for="clockformat-select">Clock format</label>
+        <select id="clockformat-select" class="field mt-2">
+            <option selected value="">Default</option>
+            <option value="0">12-hour</option>
+            <option value="1">24-hour</option>
+        </select>
+    </div>
+</div>

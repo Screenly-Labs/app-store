@@ -7,62 +7,47 @@ on:
   pull_request:
     branches:
       - production
+
+env:
+  HUGO_VERSION: 0.157.0
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      deployments: write
     name: Deploy to Cloudflare Pages
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Legacy CI step 1
-        run: |
-          IMAGE=app_store_srly_io:latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
-          docker-compose build
+      - name: Install JS dependencies
+        run: bun install --frozen-lockfile
 
-          BUILDARGS="_config.yml"
-          echo 'BUILD_ENV=production' >> $GITHUB_ENV
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true
 
-          function run_in_container {
-            docker run \
-              --rm \
-              -v "$(pwd)":/usr/src/app \
-              -e JEKYLL_ENV=production \
-              "$IMAGE" "$@"
-          }
+      - name: Lint
+        run: bun run lint
 
-          # This is one insane block of code to deal with
-          # various permission errors on CI
-          run_in_container rm -rf {.asset-cache,_site}
-          run_in_container mkdir -p {.asset-cache/sprockets,_site}
-          run_in_container chmod a+rwX -R {.asset-cache,_site}
-          run_in_container jekyll build --config "$BUILDARGS"
-          run_in_container chmod a+rwX -R {_site,.asset-cache}
-          run_in_container rm -rf .asset-cache
+      - name: Test
+        run: bun test
 
-          find _site
-
-      - name: Legacy CI step 2
-        run: |
-          IMAGE=app_store_srly_io:latest
-
-          docker run \
-            --rm \
-            -v "$(pwd)":/usr/src/app \
-            -e JEKYLL_ENV=production \
-            "$IMAGE" \
-            bundle exec htmlproofer ./_site || true
+      - name: Build
+        run: hugo --gc --minify --baseURL "https://app-store.srly.io/"
 
       - name: Publish
         if: github.event_name != 'pull_request'
-        uses: cloudflare/pages-action@1
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: app-store-production
-          directory: _site
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy public --project-name=app-store-production --branch=${{ github.ref_name }}

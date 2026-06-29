@@ -1,0 +1,46 @@
+        <!-- Run it your way: free & open (Anthias) or managed (Screenly) -->
+        <section id="run" class="wrap scroll-mt-20 py-20 sm:py-28">
+            <div class="text-center">
+                <p class="eyebrow">Run it your way</p>
+                <h2 class="mt-4 text-3xl sm:text-5xl">Free and open, or fully managed.</h2>
+                <p class="mx-auto mt-4 max-w-xl text-dim">Every one of these apps runs on both. Pick the platform that fits — there's no vendor lock-in.</p>
+            </div>
+
+            <div class="mx-auto mt-10 grid max-w-3xl gap-5 sm:grid-cols-2">
+                <div class="panel">
+                    <span class="tag">Free · Open source</span>
+                    <h3 class="mt-2 text-2xl">Anthias</h3>
+                    <p class="mt-2 flex-1 text-sm text-dim">Self-host the open-source digital signage player on a Raspberry Pi or any Linux device. Free, forever.</p>
+                    <a class="btn-ghost mt-6 self-start" href="https://anthias.screenly.io" target="_blank" rel="noopener">Get Anthias {{ partial "icon.html" "arrow-right" }}</a>
+                </div>
+                <div class="panel" style="border-color:var(--color-line-2)">
+                    <span class="tag">For business · Free trial</span>
+                    <h3 class="mt-2 text-2xl">Screenly</h3>
+                    <p class="mt-2 flex-1 text-sm text-dim">Managed, secure digital signage for teams and fleets, with support and remote fleet management. Start a free trial.</p>
+                    <a class="btn-primary mt-6 self-start" href="https://login.screenlyapp.com/signup" target="_blank" rel="noopener">Start free trial {{ partial "icon.html" "arrow-right" }}</a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="border-t border-line">
+            <div class="wrap flex flex-col gap-8 py-12 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <a class="brand" href="{{ "/" | relURL }}">
+                        {{ partial "optimg.html" (dict "src" "img/logo-light.png" "alt" "Screenly" "widths" (slice 72 144) "sizes" "36px" "class" "brand__mark") }}
+                        <span class="brand__name">Screenly <span class="brand__sub">Apps</span></span>
+                    </a>
+                    <p class="mt-4 max-w-sm text-sm text-faint">Free, vendor-agnostic digital signage apps for every smart TV and signage player.</p>
+                </div>
+
+                <nav class="flex items-center gap-4 text-xl text-dim" aria-label="Screenly on social media">
+                    <a class="transition-colors hover:text-ink" href="{{ .Site.Params.social.github }}" target="_blank" rel="noopener" aria-label="GitHub">{{ partial "icon.html" "github" }}</a>
+                    <a class="transition-colors hover:text-ink" href="{{ .Site.Params.social.linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn">{{ partial "icon.html" "linkedin" }}</a>
+                </nav>
+            </div>
+            <div class="wrap flex flex-col gap-2 border-t border-line py-6 text-xs text-faint sm:flex-row sm:items-center sm:justify-between">
+                <span class="font-mono">© {{ now.Year }} Screenly, Inc.</span>
+                <a class="link-accent" href="mailto:{{ .Site.Params.email }}">{{ .Site.Params.email }}</a>
+            </div>
+        </footer>
+
+        <a class="back-to-top" href="#start" data-scroll-class="80vh:is-visible" aria-label="Back to top">{{ partial "icon.html" "arrow-up" }}</a>
