@@ -10,7 +10,7 @@
 
         <link rel="canonical" href="{{ .Permalink }}">
         <meta name="description" content="{{ $desc }}">
-        <meta name="robots" content="index, follow">
+        <meta name="robots" content="{{ if hugo.IsProduction }}index, follow{{ else }}noindex, nofollow{{ end }}">
 
         <!-- Open Graph -->
         <meta property="og:site_name" content="{{ .Site.Params.brand }}">

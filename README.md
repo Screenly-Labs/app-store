@@ -1,6 +1,6 @@
 # Screenly App Store
 
-Screenly Apps for digital signage — a static site built with
+Digital signage apps, a static site built with
 [Hugo](https://gohugo.io/) (extended) and [Bun](https://bun.sh/) for JavaScript
 dependency management, linting and tests.
 
@@ -38,14 +38,14 @@ The site is then available at http://127.0.0.1:8080
 * **Styles** use [Tailwind CSS v4](https://tailwindcss.com/) (`assets/css/app.css`),
   compiled by Hugo via PostCSS and fingerprinted. Design tokens live in the
   `@theme` block; reusable patterns in `@layer components`.
-* **JavaScript** is plain modern ESM in `assets/js/` — no jQuery. The only
+* **JavaScript** is plain modern ESM in `assets/js/`, no jQuery. The only
   third-party libraries (clipboard.js, Sentry) are installed via Bun and bundled
   locally by Hugo's esbuild; nothing is loaded from a CDN. Pure logic is unit
   tested with `bun test`.
 * **Images** are processed through Hugo's image pipeline (responsive WebP,
   `srcset`, lazy-loading, intrinsic dimensions).
 * **Fonts** (Space Grotesk, Space Mono, Open Sans) are self-hosted from the
-  Bun-managed `@fontsource/*` packages — no remote font requests.
+  Bun-managed `@fontsource/*` packages, no remote font requests.
 
 ## Deployment
 
