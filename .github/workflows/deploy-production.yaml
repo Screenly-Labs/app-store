@@ -42,7 +42,7 @@ jobs:
         run: bun test
 
       - name: Build
-        run: hugo --gc --minify --baseURL "https://app-store.srly.io/"
+        run: hugo --gc --minify --baseURL "https://signage-apps.com/"
 
       - name: Publish
         if: github.event_name != 'pull_request'

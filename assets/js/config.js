@@ -1,7 +1,7 @@
 /* global google */
 // App configuration page (Weather / Clock): builds the launch URL from the
 // chosen options and an optional map location. The Google Maps API is loaded
-// on demand — it is an external service with no local equivalent.
+// on demand. It is an external service with no local equivalent.
 import { buildQueryUrl } from './lib/query-url.js';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyD4xizgVnzfyTQgM15V3tvihZxQDAdUuAg';

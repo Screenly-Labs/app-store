@@ -3,6 +3,6 @@
 services:
   web:
     build: .
-    image: app_store_srly_io:latest
+    image: signage_apps_com:latest
     ports:
       - "8080:80"
