@@ -19,6 +19,7 @@
             </div>
 
             <div class="mt-5 flex flex-wrap gap-3">
+                {{ if .Params.appconfig }}
                 <div class="modal-instance">
                     <a class="btn-primary modal-trigger" href="#">Configure settings</a>
                     <div class="modal-container">
@@ -28,7 +29,8 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" id="app-form-btn" class="btn-ghost btn-clipboard" data-clipboard-target="#app-form-url">
+                {{ end }}
+                <button type="button" id="app-form-btn" class="btn-clipboard {{ if .Params.appconfig }}btn-ghost{{ else }}btn-primary{{ end }}" data-clipboard-target="#app-form-url">
                     {{ partial "icon.html" "clipboard" }} <span data-copy-label>Copy link</span>
                 </button>
             </div>
