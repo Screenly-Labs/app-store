@@ -1,0 +1,45 @@
+{{ define "main" }}
+<section class="wrap py-12 sm:py-16">
+    {{ partial "detail-head.html" . }}
+
+    <div class="mt-8 grid gap-10 lg:grid-cols-2 lg:items-start">
+        <div class="overflow-hidden rounded-2xl border border-line-2" style="box-shadow:0 40px 80px -30px rgb(122 90 248 / 50%)">
+            {{ partial "optimg.html" (dict "src" (printf "img/%s" .Params.app.image) "alt" .Title "widths" (slice 640 960 1280) "sizes" "(min-width:1024px) 48vw, 92vw" "loading" "eager") }}
+        </div>
+
+        <div>
+            <span class="tag">{{ index (split .Params.masonry ",") 0 | strings.TrimSpace }}</span>
+            <h1 class="mt-2 text-4xl sm:text-5xl">{{ .Title }}</h1>
+            <p class="mt-4 text-lg text-dim">{{ .Params.description }}</p>
+
+            <div class="mt-8">
+                <label class="eyebrow" for="app-form-url">App link</label>
+                <input class="field mt-2" id="app-form-url" type="text" data-url="{{ .Params.app.url }}" value="{{ .Params.app.url }}" readonly>
+                <p class="mt-2 text-xs text-faint">Paste this link into Anthias, Screenly, or any compatible smart TV or signage player.</p>
+            </div>
+
+            <div class="mt-5 flex flex-wrap gap-3">
+                <div class="modal-instance">
+                    <a class="btn-primary modal-trigger" href="#">Configure settings</a>
+                    <div class="modal-container">
+                        <div class="modal-content">
+                            <div class="modal-close modal-close-cross" role="button" aria-label="Close"></div>
+                            {{ .Content }}
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="app-form-btn" class="btn-ghost btn-clipboard" data-clipboard-target="#app-form-url">
+                    {{ partial "icon.html" "clipboard" }} <span data-copy-label>Copy link</span>
+                </button>
+            </div>
+
+            {{ with .Params.links }}
+            <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                {{ with .support }}<a class="link-accent" href="{{ . }}" target="_blank" rel="noopener">Support</a>{{ end }}
+                {{ with .source }}<a class="link-accent" href="{{ . }}" target="_blank" rel="noopener">Source code</a>{{ end }}
+            </div>
+            {{ end }}
+        </div>
+    </div>
+</section>
+{{ end }}

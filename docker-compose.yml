@@ -1,23 +1,8 @@
-version: '3'
+# Production-like preview: builds the site and serves it on http://127.0.0.1:8080
+# For live-reload local development use `bun run dev` instead.
 services:
-  jekyll:
+  web:
     build: .
-    command: jekyll build -V --watch --incremental --config _config.yml,_config_dev.yml
     image: app_store_srly_io:latest
-    volumes:
-      - .:/usr/src/app
-      - cache:/usr/src/app/.jekyll-cache/ # Don't host mount this because it's very slow on Docker for Mac.
-      - site:/usr/src/app/_site/ # ...and use a shared volume for this for the same reason.
-    environment:
-      - JEKYLL_ENV=development
-  nginx:
-    image: nginx:stable-alpine
-    volumes:
-      - site:/usr/share/nginx/html:ro
     ports:
-      - 8080:80
-    depends_on:
-      - jekyll
-volumes:
-  site:
-  cache:
+      - "8080:80"

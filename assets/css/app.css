@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+/* Scan templates + content for class names (relative to this file). */
+@source "../../layouts";
+@source "../../content";
+
+/* ----------------------------------------------------------------------------
+   Design tokens — "Video Wall" system (exposed as Tailwind theme + CSS vars)
+---------------------------------------------------------------------------- */
+@theme {
+  --color-bg: #0c0a14;        /* page canvas (near-black indigo) */
+  --color-bg-2: #100d1b;      /* alternate bands */
+  --color-surface: #16121f;   /* cards, panels */
+  --color-surface-2: #1d1830; /* raised / hover */
+  --color-line: #ffffff14;    /* hairline borders (8%) */
+  --color-line-2: #ffffff29;  /* stronger borders (16%) */
+
+  --color-ink: #eceaf2;       /* primary text */
+  --color-dim: #9a95ad;       /* secondary text */
+  --color-faint: #6b6680;     /* captions */
+
+  --color-accent: #7a5af8;    /* violet (primary) */
+  --color-accent2: #37b6ff;   /* cyan-blue (secondary) */
+  --color-live: #3dd68c;      /* status green */
+
+  --font-sans: "Open Sans", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+
+  --radius-lg: 20px;
+}
+
+/* ----------------------------------------------------------------------------
+   Self-hosted fonts (Bun @fontsource packages, mounted at /fonts/)
+---------------------------------------------------------------------------- */
+@font-face { font-family: "Open Sans"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/open-sans/open-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Open Sans"; font-weight: 400; font-style: italic; font-display: swap; src: url("../fonts/open-sans/open-sans-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Open Sans"; font-weight: 600; font-style: normal; font-display: swap; src: url("../fonts/open-sans/open-sans-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Open Sans"; font-weight: 700; font-style: normal; font-display: swap; src: url("../fonts/open-sans/open-sans-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/space-grotesk/space-grotesk-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 500; font-style: normal; font-display: swap; src: url("../fonts/space-grotesk/space-grotesk-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 700; font-style: normal; font-display: swap; src: url("../fonts/space-grotesk/space-grotesk-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Space Mono"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/space-mono/space-mono-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Space Mono"; font-weight: 700; font-style: normal; font-display: swap; src: url("../fonts/space-mono/space-mono-latin-700-normal.woff2") format("woff2"); }
+
+/* ----------------------------------------------------------------------------
+   Base
+---------------------------------------------------------------------------- */
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 { @apply font-display font-bold tracking-tight; text-wrap: balance; }
+  a { color: inherit; }
+  ::selection { background: var(--color-accent); color: #fff; }
+  :focus-visible { outline: 2px solid var(--color-accent2); outline-offset: 2px; border-radius: 4px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Components
+---------------------------------------------------------------------------- */
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+
+  /* Mono eyebrow / data labels */
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.18em] text-accent2;
+  }
+  .tag {
+    @apply inline-block font-mono text-[11px] uppercase tracking-[0.12em] text-dim;
+  }
+
+  /* Live status chip */
+  .status {
+    @apply inline-flex items-center gap-2 rounded-full border border-line-2 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-dim;
+  }
+  .status__dot {
+    @apply h-1.5 w-1.5 rounded-full;
+    background: var(--color-live);
+    box-shadow: 0 0 0 0 rgb(61 214 140 / 60%);
+    animation: pulse 2.4s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgb(61 214 140 / 55%); }
+    70% { box-shadow: 0 0 0 6px rgb(61 214 140 / 0%); }
+    100% { box-shadow: 0 0 0 0 rgb(61 214 140 / 0%); }
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-display font-medium text-white transition-transform;
+    background: linear-gradient(120deg, var(--color-accent), var(--color-accent2));
+    box-shadow: 0 12px 30px -10px rgb(122 90 248 / 60%);
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line-2 px-6 py-3 font-display font-medium text-ink transition-colors;
+  }
+  .btn-ghost:hover { background: var(--color-surface-2); border-color: var(--color-accent); }
+  .btn-ghost--sm { @apply px-4 py-2 text-sm; }
+
+  .link-accent { @apply inline-flex items-center gap-1 font-medium text-accent2 transition-opacity hover:opacity-80; }
+
+  .text-grad {
+    background: linear-gradient(120deg, var(--color-accent), var(--color-accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* Responsive, centered app grid (no masonry/isotope) */
+  .app-grid { @apply flex flex-wrap justify-center gap-5; }
+  .app-grid > * {
+    @apply basis-full;
+  }
+  @media (min-width: 640px) { .app-grid > * { flex-basis: calc(50% - 0.625rem); max-width: 28rem; } }
+  @media (min-width: 1024px) { .app-grid > * { flex-basis: calc(33.333% - 0.834rem); } }
+  .app-grid > [hidden] { display: none; }
+
+  /* Brand */
+  .brand { @apply inline-flex items-center gap-3; }
+  .brand__mark { @apply h-9 w-auto; }
+  .brand__name { @apply font-display text-lg font-bold leading-none; }
+  .brand__sub { @apply text-dim font-normal; }
+
+  /* App "screen" card — the signature element */
+  .card-screen {
+    @apply block overflow-hidden rounded-2xl border border-line bg-surface transition-all duration-300;
+  }
+  .card-screen:hover {
+    border-color: var(--color-line-2);
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px -24px rgb(122 90 248 / 55%);
+  }
+  .card-screen__media {
+    @apply relative aspect-video overflow-hidden border-b border-line;
+  }
+  .card-screen__media img { @apply h-full w-full object-cover transition-transform duration-500; }
+  .card-screen:hover .card-screen__media img { transform: scale(1.04); }
+  .card-screen__body { @apply p-5; }
+
+  /* Filter pills */
+  .app-filter { @apply flex flex-wrap items-center gap-2; }
+  .app-filter button {
+    @apply cursor-pointer rounded-full border border-line px-3.5 py-1.5 font-mono text-xs uppercase tracking-[0.1em] text-dim transition-colors;
+  }
+  .app-filter button:hover { color: var(--color-ink); border-color: var(--color-line-2); }
+  .app-filter button.is-active {
+    color: #fff; border-color: transparent;
+    background: linear-gradient(120deg, var(--color-accent), var(--color-accent2));
+  }
+
+  /* Option panel (Anthias / Screenly) */
+  .panel { @apply flex flex-col rounded-2xl border border-line bg-surface p-7 transition-colors; }
+  .panel:hover { border-color: var(--color-line-2); }
+
+  /* Read-only URL field */
+  .field {
+    @apply w-full rounded-xl border border-line bg-bg-2 px-4 py-3 font-mono text-sm text-ink;
+  }
+
+  /* Breadcrumbs */
+  .breadcrumbs { @apply flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-faint; }
+
+  /* Section divider rule */
+  .rule { @apply border-0 border-t border-line; }
+
+  /* Modal */
+  .modal-container {
+    @apply fixed inset-0 z-50 hidden items-center justify-center p-4;
+    background: rgb(6 4 12 / 78%);
+    backdrop-filter: blur(6px);
+  }
+  .modal-container.modal-active { @apply flex; }
+  .modal-content {
+    @apply relative w-full max-w-2xl overflow-auto rounded-2xl border border-line-2 bg-surface p-6 sm:p-8;
+    max-height: 88vh;
+    box-shadow: var(--shadow, 0 30px 80px -20px rgb(0 0 0 / 70%));
+  }
+  .modal-close {
+    @apply absolute right-4 top-4 h-8 w-8 cursor-pointer rounded-full border border-line-2;
+  }
+  .modal-close::before, .modal-close::after {
+    content: ""; @apply absolute left-1/2 top-1/2 h-px w-3.5 bg-dim;
+  }
+  .modal-close::before { transform: translate(-50%, -50%) rotate(45deg); }
+  .modal-close::after { transform: translate(-50%, -50%) rotate(-45deg); }
+  .modal-close:hover { border-color: var(--color-accent); }
+
+  /* Config map */
+  #config-map { @apply h-80 w-full overflow-hidden rounded-xl border border-line; }
+  .marker {
+    @apply pointer-events-none absolute left-1/2 top-1/2 text-accent2;
+    transform: translate(-50%, -100%);
+  }
+
+  /* Back to top */
+  .back-to-top {
+    @apply fixed bottom-6 right-6 z-40 grid h-11 w-11 place-items-center rounded-full border border-line-2 opacity-0 transition-opacity;
+    background: var(--color-surface);
+    pointer-events: none;
+  }
+  .back-to-top.is-visible { @apply opacity-100; pointer-events: auto; }
+  .back-to-top:hover { border-color: var(--color-accent); }
+}
+
+/* Hero glow + grid texture */
+.hero { position: relative; isolation: isolate; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: 0; z-index: -2;
+  background-image:
+    linear-gradient(var(--color-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(120% 80% at 30% 0%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(120% 80% at 30% 0%, #000 0%, transparent 70%);
+}
+.hero::after {
+  content: ""; position: absolute; z-index: -1;
+  width: 60vw; height: 60vw; top: -25vw; right: -15vw; border-radius: 9999px;
+  background: radial-gradient(circle, rgb(122 90 248 / 28%) 0%, transparent 60%);
+  filter: blur(20px);
+}
+
+/* Card reveal animation */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { animation: reveal .5s var(--ease, ease) both; }
+  @keyframes reveal { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+}

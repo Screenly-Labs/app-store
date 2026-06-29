@@ -1,0 +1,18 @@
+<a id="start"></a>
+
+<header class="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur">
+    <div class="wrap flex h-16 items-center justify-between gap-4">
+        <a class="brand" href="{{ "/" | relURL }}">
+            {{ partial "optimg.html" (dict "src" "img/logo-light.png" "alt" "Screenly" "widths" (slice 72 144) "sizes" "36px" "loading" "eager" "class" "brand__mark") }}
+            <span class="brand__name">Screenly <span class="brand__sub">Apps</span></span>
+        </a>
+
+        <div class="flex items-center gap-3 sm:gap-5">
+            <nav class="hidden items-center gap-3 text-lg text-dim sm:flex" aria-label="Screenly on social media">
+                <a class="transition-colors hover:text-ink" href="{{ .Site.Params.social.github }}" target="_blank" rel="noopener" aria-label="GitHub">{{ partial "icon.html" "github" }}</a>
+                <a class="transition-colors hover:text-ink" href="{{ .Site.Params.social.linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn">{{ partial "icon.html" "linkedin" }}</a>
+            </nav>
+            <a class="btn-ghost btn-ghost--sm whitespace-nowrap" href="#run">Get started</a>
+        </div>
+    </div>
+</header>

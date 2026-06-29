@@ -7,6 +7,10 @@ on:
   pull_request:
     branches:
       - master
+
+env:
+  HUGO_VERSION: 0.157.0
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,33 +20,30 @@ jobs:
     name: Deploy to Cloudflare Pages
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Legacy CI step 1
-        run: |
-          IMAGE=app_store_srly_io:latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
-          docker-compose build
+      - name: Install JS dependencies
+        run: bun install --frozen-lockfile
 
-          BUILDARGS="_config.yml,_config_stage.yml"
-          echo 'BUILD_ENV=stage' >> $GITHUB_ENV
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true
 
-          function run_in_container {
-            docker run \
-              --rm \
-              -v "$(pwd)":/usr/src/app \
-              -e JEKYLL_ENV=production \
-              "$IMAGE" "$@"
-          }
+      - name: Lint
+        run: bun run lint
 
-          # This is one insane block of code to deal with
-          # various permission errors on CI
-          run_in_container rm -rf {.asset-cache,_site}
-          run_in_container mkdir -p {.asset-cache/sprockets,_site}
-          run_in_container chmod a+rwX -R {.asset-cache,_site}
-          run_in_container jekyll build --config "$BUILDARGS"
-          run_in_container chmod a+rwX -R {_site,.asset-cache}
-          run_in_container rm -rf .asset-cache
+      - name: Test
+        run: bun test
+
+      - name: Build
+        run: hugo --gc --minify --baseURL "https://stage-app-store.srly.io/"
 
       - name: Publish
         if: github.event_name != 'pull_request'
@@ -51,5 +52,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: "app-store-stage"
-          directory: _site
+          directory: public
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
