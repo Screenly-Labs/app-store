@@ -87,6 +87,22 @@ export function initModals() {
   });
 }
 
+// "Live preview": open the app with the link currently shown in the App link
+// field — i.e. whatever the config form has produced — in a new tab. Reads the
+// value at click time so it always reflects the latest configuration, and
+// falls back to the app's base URL on pages without a config form.
+export function initLivePreview() {
+  const trigger = document.querySelector('[data-live-preview]');
+  const input = document.getElementById('app-form-url');
+  if (!trigger || !input) return;
+
+  trigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    const url = input.value || input.dataset.url;
+    if (url) window.open(url, '_blank', 'noopener');
+  });
+}
+
 // Toggle a class once a scroll position is passed, e.g.
 // data-scroll-class="80vh:is-visible" on the back-to-top button.
 export function initScrollClasses() {

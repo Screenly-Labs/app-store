@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
-/* Scan templates + content for class names (relative to this file). */
+/* Iconify on-demand icons (Lucide set), rendered as CSS mask utilities like
+   `icon-[lucide--x]`; data comes from the Bun-managed @iconify-json/lucide. */
+@plugin "@iconify/tailwind4";
+
+/* Scan templates, content and the JS that generates markup for class names
+   (relative to this file) — the map and config build icons/utilities in JS. */
 @source "../../layouts";
 @source "../../content";
+@source "../js";
 
 /* ----------------------------------------------------------------------------
    Design tokens: "Video Wall" system (exposed as Tailwind theme + CSS vars)
@@ -104,6 +110,8 @@
     @apply inline-flex items-center justify-center gap-2 rounded-full border border-line-2 px-6 py-3 font-display font-medium text-ink transition-colors;
   }
   .btn-ghost:hover { background: var(--color-surface-2); border-color: var(--color-accent); }
+  .btn-ghost:disabled { @apply cursor-not-allowed opacity-45; }
+  .btn-ghost:disabled:hover { background: transparent; border-color: var(--color-line-2); }
   .btn-ghost--sm { @apply px-4 py-2 text-sm; }
 
   .link-accent { @apply inline-flex items-center gap-1 font-medium text-accent2 transition-opacity hover:opacity-80; }
@@ -213,7 +221,6 @@
     transform: translate(-50%, -100%);
     filter: drop-shadow(0 6px 5px rgb(0 0 0 / 45%));
   }
-  .loc-map__pin svg { @apply block h-8 w-8; }
   .loc-map__pin::after {
     content: ""; @apply absolute left-1/2 -bottom-1 h-2 w-2 -translate-x-1/2 rounded-full;
     background: var(--color-accent2);
@@ -234,8 +241,18 @@
     backdrop-filter: blur(8px);
   }
   .loc-map__btn:hover { background: var(--color-surface-2); border-color: var(--color-accent); }
-  .loc-map__btn svg { @apply h-4 w-4; }
   .loc-map__btn.is-busy { @apply pointer-events-none opacity-60; }
+
+  /* World-clock config: a board of cities the viewer assembles. Each row wraps
+     on narrow screens; the zone and label share the space, remove sits at end. */
+  .wc-clocks { @apply flex flex-col gap-3; }
+  .wc-row { @apply flex flex-wrap items-center gap-2; }
+  .wc-row__field { @apply min-w-0 flex-1; flex-basis: 9rem; }
+  .wc-empty { @apply mt-3 text-sm text-faint; }
+  .wc-check {
+    @apply h-4 w-4 shrink-0 cursor-pointer rounded;
+    accent-color: var(--color-accent);
+  }
 
   /* Live coordinate readout chip. */
   .loc-map__readout {
@@ -243,7 +260,6 @@
     background: color-mix(in srgb, var(--color-surface) 78%, transparent);
     backdrop-filter: blur(8px);
   }
-  .loc-map__readout svg { @apply h-3.5 w-3.5 text-accent2; }
 
   /* Hint that fades once the user starts dragging. */
   .loc-map__hint {
