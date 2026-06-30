@@ -16,11 +16,14 @@ const MAP_STYLES = [{ "featureType": "administrative", "elementType": "all", "st
 const DEFAULT_CENTER = { lat: 51.5287718, lng: -0.2417001 };
 const DEFAULT_ZOOM = 13;
 
+// Lucide icons, rendered as CSS-mask spans (the same kit and mechanism the rest
+// of the site uses via the icon.html partial). Sizing is applied where each is
+// mounted; the classes are compiled because assets/js is a Tailwind @source.
 const ICONS = {
-  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
-  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
-  minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>',
-  locate: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>',
+  pin: 'icon-[lucide--map-pin]',
+  plus: 'icon-[lucide--plus]',
+  minus: 'icon-[lucide--minus]',
+  locate: 'icon-[lucide--locate-fixed]',
 };
 
 // Load the Maps script once per page and share the promise between callers.
@@ -46,7 +49,7 @@ function controlButton(action, label, icon) {
   button.className = 'loc-map__btn';
   button.dataset.act = action;
   button.setAttribute('aria-label', label);
-  button.innerHTML = icon;
+  button.innerHTML = `<span class="${icon} size-4" aria-hidden="true"></span>`;
   return button;
 }
 
@@ -56,7 +59,7 @@ function buildChrome(mount) {
   mount.innerHTML = `
     <div class="loc-map__canvas"></div>
     <div class="loc-map__frame"></div>
-    <span class="loc-map__pin">${ICONS.pin}</span>
+    <span class="loc-map__pin"><span class="${ICONS.pin} block size-8" aria-hidden="true"></span></span>
     <div class="loc-map__hint">Drag to set location</div>
   `;
 
@@ -69,7 +72,7 @@ function buildChrome(mount) {
 
   const readout = document.createElement('div');
   readout.className = 'loc-map__readout';
-  readout.innerHTML = `${ICONS.pin}<span data-coords>—</span>`;
+  readout.innerHTML = `<span class="${ICONS.pin} size-3.5 text-accent2" aria-hidden="true"></span><span data-coords>—</span>`;
 
   mount.append(controls, readout);
 

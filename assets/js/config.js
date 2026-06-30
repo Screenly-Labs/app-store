@@ -1,9 +1,13 @@
-// App configuration page (Weather / Air Quality / Clock): builds the launch URL
-// from the chosen options and an optional map location.
+// App configuration page: builds the launch URL from the chosen options.
+// Most apps (Weather / Air Quality / Clock) share a location + clock-format
+// form; the World Clock has its own, richer board picker, so we dispatch on the
+// markup the page renders.
 import { buildQueryUrl } from './lib/query-url.js';
 import { initLocationMap } from './lib/location-map.js';
+import { initWorldClockConfig } from './config-world-clock.js';
 
-function initConfig() {
+// Location + clock-format form shared by Weather, Air Quality and Clock.
+function initLocationConfig() {
   const input = document.getElementById('app-form-url');
   if (!input) return;
 
@@ -31,4 +35,8 @@ function initConfig() {
   });
 }
 
-initConfig();
+if (document.querySelector('[data-world-clock-config]')) {
+  initWorldClockConfig();
+} else {
+  initLocationConfig();
+}

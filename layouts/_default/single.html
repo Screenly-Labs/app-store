@@ -33,6 +33,9 @@
                 <button type="button" id="app-form-btn" class="btn-clipboard {{ if .Params.appconfig }}btn-ghost{{ else }}btn-primary{{ end }}" data-clipboard-target="#app-form-url">
                     {{ partial "icon.html" "clipboard" }} <span data-copy-label>Copy link</span>
                 </button>
+                <a class="btn-ghost" href="{{ .Params.app.url }}" target="_blank" rel="noopener" data-live-preview>
+                    Live preview {{ partial "icon.html" "external-link" }}
+                </a>
             </div>
 
             {{ with .Params.links }}
