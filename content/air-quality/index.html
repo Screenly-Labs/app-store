@@ -1,0 +1,27 @@
+---
+title: Air Quality
+description: A full-screen air-quality display showing the local air quality index, the main pollutant, and an hourly forecast. It detects the screen's location automatically, or pick one below.
+cardtext: Live local air quality for any display.
+masonry: Air Quality, Weather
+bodyclass: product
+appconfig: true
+weight: 6
+app:
+  url: https://air.srly.io/
+  image: app-air-quality.jpg
+links:
+  support: https://github.com/Screenly-Labs/air-quality/issues
+  source: https://github.com/Screenly-Labs/air-quality
+---
+
+<div id="config">
+    <h2 class="text-2xl">Air quality settings</h2>
+    <p class="mt-1 text-dim">Drag the map to pick the location you want to show, or leave it to detect the screen's location automatically.</p>
+
+    <div class="relative mt-5">
+        <div id="config-map"></div>
+        <span class="marker text-3xl">
+            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </span>
+    </div>
+</div>
