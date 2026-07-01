@@ -305,3 +305,16 @@
   .reveal { animation: reveal .5s var(--ease, ease) both; }
   @keyframes reveal { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 }
+
+/* Hero slideshow: stacked screenshots that cross-fade (see partials/hero-slideshow.html).
+   The `heroShots` keyframe and per-slide `animation-delay` are generated at build time. */
+.hero-shots { position: relative; aspect-ratio: 16 / 9; }
+.hero-shot { position: absolute; inset: 0; opacity: 0; }
+.hero-shot:first-child { opacity: 1; }   /* fallback: show the first frame if animation is off */
+.hero-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-shot {
+    animation: heroShots var(--hero-dur, 40s) linear infinite;
+    will-change: opacity;
+  }
+}
