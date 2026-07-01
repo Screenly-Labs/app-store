@@ -1,8 +1,15 @@
 name: CI
 
 on:
+  workflow_call:
   push:
+    branches-ignore:
+      - master
+      - production
   pull_request:
+    branches-ignore:
+      - master
+      - production
 
 env:
   HUGO_VERSION: 0.157.0
