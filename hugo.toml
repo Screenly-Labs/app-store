@@ -28,6 +28,9 @@ disableKinds = ["taxonomy", "term", "rss", "section"]
     github = "https://github.com/orgs/Screenly/"
     medium = "https://news.screenly.io/"
 
+[services.googleAnalytics]
+  ID = "G-P2TYEQ4NTL"
+
 [markup.goldmark.renderer]
   # The app description pages contain inline HTML (links, etc.).
   unsafe = true
