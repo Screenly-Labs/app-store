@@ -30,8 +30,7 @@
                 {{ $rssOne := first 1 (where (where .Site.RegularPages "Section" "rss") "File.ContentBaseName" "nasa-iotd") }}
                 {{ $heroPages := sort ((where .Site.RegularPages "Section" "!=" "rss") | append $rssOne) "Weight" }}
                 {{ partial "hero-slideshow.html" (dict
-                    "pages" $heroPages
-                    "first" (dict "src" "img/hero-3.jpg" "alt" "Screenly running on a display")) }}
+                    "pages" $heroPages) }}
             </div>
         </div>
     </div>
