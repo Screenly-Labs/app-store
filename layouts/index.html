@@ -26,7 +26,12 @@
 
         <div class="relative">
             <div class="overflow-hidden rounded-2xl border border-line-2 shadow-2xl" style="box-shadow:0 40px 80px -30px rgb(122 90 248 / 55%)">
-                {{ partial "optimg.html" (dict "src" "img/hero-3.jpg" "alt" "Screenly running on a display" "widths" (slice 640 960 1280) "sizes" "(min-width:1024px) 40vw, 90vw" "loading" "eager") }}
+                {{- /* Every app, but collapse the many RSS feeds to one representative screenshot. */ -}}
+                {{ $rssOne := first 1 (where (where .Site.RegularPages "Section" "rss") "File.ContentBaseName" "nasa-iotd") }}
+                {{ $heroPages := sort ((where .Site.RegularPages "Section" "!=" "rss") | append $rssOne) "Weight" }}
+                {{ partial "hero-slideshow.html" (dict
+                    "pages" $heroPages
+                    "first" (dict "src" "img/hero-3.jpg" "alt" "Screenly running on a display")) }}
             </div>
         </div>
     </div>
