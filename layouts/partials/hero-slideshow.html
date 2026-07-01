@@ -1,0 +1,60 @@
+{{- /*
+  Hero slideshow: a pure-CSS crossfading loop.
+
+  Renders the given "first" image, then loops through every page's app
+  screenshot, so newly added apps are picked up automatically. All slides are
+  stacked and cross-fade via a single keyframe; the keyframe stops and the
+  per-slide delays are computed here at build time, so the timing stays correct
+  for any number of slides.
+
+  Params (dict):
+    pages  (required) page collection; each page's .Params.app.image is a slide
+    first  (optional) dict {src, alt} shown first and kept in the loop
+    hold   (optional) seconds each slide stays up, incl. fade (default 4)
+    fade   (optional) crossfade seconds (default 0.8)
+*/ -}}
+{{- $hold := .hold | default 4.0 -}}
+{{- $fade := .fade | default 0.8 -}}
+
+{{- /* Build the slide list: the "first" image, then one per page. */ -}}
+{{- $slides := slice -}}
+{{- with .first -}}
+  {{- $slides = $slides | append (dict "src" .src "alt" (.alt | default "")) -}}
+{{- end -}}
+{{- range .pages -}}
+  {{- with .Params.app.image -}}
+    {{- $slides = $slides | append (dict "src" (printf "img/%s" .) "alt" $.Title) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $n := len $slides -}}
+{{- if le $n 1 -}}
+  {{- /* Nothing to animate: render the single image. */ -}}
+  {{- with index $slides 0 -}}
+    {{ partial "optimg.html" (dict "src" .src "alt" .alt "widths" (slice 640 960 1280) "sizes" "(min-width:1024px) 40vw, 90vw" "loading" "eager") }}
+  {{- end -}}
+{{- else -}}
+  {{- $dur := mul $n $hold -}}
+  {{- /* Keyframe stops as a percent of the full cycle. */ -}}
+  {{- $slotPct := div 100.0 $n -}}
+  {{- $fadePct := div (mul $fade 100.0) $dur -}}
+  {{- $outPct := add $slotPct $fadePct -}}
+  <div class="hero-shots" style="--hero-dur:{{ printf "%.3f" $dur }}s">
+    <style>
+      @keyframes heroShots {
+        0% { opacity: 0 }
+        {{ printf "%.4f" $fadePct }}% { opacity: 1 }
+        {{ printf "%.4f" $slotPct }}% { opacity: 1 }
+        {{ printf "%.4f" $outPct }}% { opacity: 0 }
+        100% { opacity: 0 }
+      }
+    </style>
+    {{- range $i, $s := $slides -}}
+      {{- /* Negative delay on the first slide so it is fully shown at load. */ -}}
+      {{- $delay := sub (mul $i $hold) $fade -}}
+      <div class="hero-shot" style="animation-delay:{{ printf "%.3f" $delay }}s"{{ if gt $i 0 }} aria-hidden="true"{{ end }}>
+        {{ partial "optimg.html" (dict "src" $s.src "alt" $s.alt "widths" (slice 640 960 1280) "sizes" "(min-width:1024px) 40vw, 90vw" "loading" (cond (eq $i 0) "eager" "lazy")) }}
+      </div>
+    {{- end -}}
+  </div>
+{{- end -}}

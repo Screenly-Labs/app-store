@@ -12,7 +12,12 @@ env:
   HUGO_VERSION: 0.157.0
 
 jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yaml
+
   deploy:
+    needs: ci
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -34,12 +39,6 @@ jobs:
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Test
-        run: bun test
 
       - name: Build
         run: hugo --gc --minify --baseURL "https://signage-apps.com/"
