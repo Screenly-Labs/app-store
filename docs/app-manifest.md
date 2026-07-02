@@ -41,10 +41,13 @@ Requirements:
   "source":   "https://github.com/Screenly-Labs/weather-app",   // optional.
   "support":  "https://github.com/Screenly-Labs/weather-app/issues", // optional.
 
-  // Playback hints a consumer may apply as defaults. Optional.
+  // How the app paces itself. Optional. There is deliberately no "duration":
+  // total time on screen is a playlist decision, not an app property.
   "playback": {
-    "duration": 30,          // seconds on screen
-    "refreshIntervalS": 3600 // how often the page should reload
+    "pacing": "stepped",     // "fixed" = one static page | "stepped" = self-advances
+    "loops": true,           // stepped only: cycles forever vs plays once and stops
+    "stepSeconds": 12,       // stepped only: dwell per internal step
+    "refreshIntervalS": 3600 // how often it reloads its data
   },
 
   // JSON Schema (draft 2020-12) describing the configurable settings.
@@ -55,6 +58,26 @@ Requirements:
   "launch": { … }
 }
 ```
+
+## `playback` — pacing, not duration
+
+`playback` describes how the app paces its own content so a player can hand off
+sensibly. It deliberately has **no on-screen duration** — how long an asset stays
+up is a playlist decision, not an app property.
+
+- `pacing` — `"fixed"` (one static page) or `"stepped"` (the app advances through
+  its own content, e.g. the RSS reader rotating stories).
+- `loops` — stepped apps only: `true` cycles forever, `false` plays once and stops.
+- `stepSeconds` — stepped apps only: the dwell per internal step. Lets a player
+  land its hand-off on a step boundary instead of mid-item.
+- `refreshIntervalS` — how often the page reloads its data.
+
+**These are defaults.** Anything the user can change is exposed as a `settings`
+field instead, and that field is then the single source of truth — give it a
+matching `default` and omit it from `playback`. A player reads the effective
+value from the setting, falling back to `playback`. So a fixed rotation lives in
+`playback.stepSeconds`; a user-adjustable rotation lives in `settings` (e.g. a
+`stepSeconds` number field) and drives both the launch URL and the pacing.
 
 ## `settings` — a JSON Schema object
 
@@ -130,7 +153,7 @@ so a manifest is never unrenderable.
   "tags": ["Weather", "Clock"],
   "source": "https://github.com/Screenly-Labs/weather-app",
   "support": "https://github.com/Screenly-Labs/weather-app/issues",
-  "playback": { "duration": 30, "refreshIntervalS": 3600 },
+  "playback": { "pacing": "fixed", "refreshIntervalS": 3600 },
   "settings": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",

@@ -34,10 +34,13 @@
     "source": { "type": "string", "format": "uri" },
     "support": { "type": "string", "format": "uri" },
     "playback": {
+      "description": "Pacing defaults. No on-screen duration by design. Anything user-configurable belongs in settings instead. See docs/app-manifest.md.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "duration": { "type": "integer", "minimum": 1 },
+        "pacing": { "enum": ["fixed", "stepped"] },
+        "loops": { "type": "boolean" },
+        "stepSeconds": { "type": "integer", "minimum": 1 },
         "refreshIntervalS": { "type": "integer", "minimum": 0, "maximum": 86400 }
       }
     },
