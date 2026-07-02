@@ -79,6 +79,11 @@ value from the setting, falling back to `playback`. So a fixed rotation lives in
 `playback.stepSeconds`; a user-adjustable rotation lives in `settings` (e.g. a
 `stepSeconds` number field) and drives both the launch URL and the pacing.
 
+**`playback` is optional — omit it entirely when there's nothing to pace.** A
+single-shot page like Quotes (a fresh quote on each load, no rotation, no data
+refresh) has no pacing to describe, so it leaves `playback` out rather than
+asserting `pacing: "fixed"`.
+
 ## `settings` — a JSON Schema object
 
 Settings are a typed form. Use standard JSON Schema for structure, types,
