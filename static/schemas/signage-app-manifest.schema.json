@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signage-apps.com/schemas/signage-app-manifest.schema.json",
+  "title": "Signage app manifest",
+  "description": "Self-describing manifest published by a signage app at /.well-known/signage-app.json. See docs/app-manifest.md.",
+  "type": "object",
+  "required": ["manifestVersion", "id", "name", "description", "launch"],
+  "additionalProperties": false,
+  "properties": {
+    "manifestVersion": {
+      "description": "Manifest format version. Bump only on breaking changes.",
+      "const": "1"
+    },
+    "id": {
+      "description": "Stable slug, unique within the store.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string" },
+    "vendor": { "type": "string" },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "icon": { "type": "string", "format": "uri" },
+    "screenshots": {
+      "type": "array",
+      "items": { "type": "string", "format": "uri" }
+    },
+    "homepage": { "type": "string", "format": "uri" },
+    "source": { "type": "string", "format": "uri" },
+    "support": { "type": "string", "format": "uri" },
+    "playback": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "duration": { "type": "integer", "minimum": 1 },
+        "refreshIntervalS": { "type": "integer", "minimum": 0, "maximum": 86400 }
+      }
+    },
+    "settings": {
+      "description": "JSON Schema (draft 2020-12) describing configurable settings. Object at the root.",
+      "type": "object",
+      "required": ["type", "properties"],
+      "properties": {
+        "type": { "const": "object" },
+        "properties": { "type": "object" }
+      }
+    },
+    "launch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseUrl"],
+      "properties": {
+        "baseUrl": { "type": "string", "format": "uri" },
+        "template": {
+          "description": "RFC 6570 URI Template over the settings property names. Omit when there are no settings.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "A template only makes sense when settings exist.",
+      "if": {
+        "properties": { "launch": { "required": ["template"] } },
+        "required": ["launch"]
+      },
+      "then": { "required": ["settings"] }
+    }
+  ]
+}
