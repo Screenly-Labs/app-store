@@ -65,14 +65,19 @@ function renderField(key, schema, widget, set, host) {
     select.className = 'field mt-2';
     select.id = id;
     const labels = schema['x-enumLabels'] || [];
-    (schema.enum || []).forEach((value, i) => {
+    const options = schema.enum || [];
+    // <select> values read back as strings; map the chosen option back to its
+    // original enum value so a typed (number/boolean) default still compares
+    // equal and isn't emitted into the URL.
+    const typed = (raw) => options.find((v) => String(v) === raw) ?? raw;
+    options.forEach((value, i) => {
       const opt = document.createElement('option');
       opt.value = value;
       opt.textContent = labels[i] || value || 'Default';
-      if (value === (schema.default ?? '')) opt.selected = true;
+      if (String(value) === String(schema.default ?? '')) opt.selected = true;
       select.appendChild(opt);
     });
-    select.addEventListener('change', () => set(key, select.value));
+    select.addEventListener('change', () => set(key, typed(select.value)));
     return fieldRow(schema, key, select, { labelFor: id });
   }
 
@@ -130,7 +135,10 @@ function renderField(key, schema, widget, set, host) {
     }
     input.placeholder = 'e.g. Europe/London';
   }
-  input.addEventListener('input', () => set(key, input.value));
+  // Number inputs read back as strings; store a Number so a numeric default
+  // compares equal and unchanged numeric defaults don't leak into the URL.
+  const read = widget === 'number' ? () => (input.value === '' ? '' : Number(input.value)) : () => input.value;
+  input.addEventListener('input', () => set(key, read()));
   return fieldRow(schema, key, input, { labelFor: id });
 }
 

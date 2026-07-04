@@ -49,6 +49,19 @@ describe('buildLaunchUrl', () => {
     );
   });
 
+  test('omits a numeric value equal to its numeric default', () => {
+    const defaults = { count: 5 };
+    expect(buildLaunchUrl(BASE, '{?count}', { count: 5 }, defaults)).toBe(BASE);
+    expect(buildLaunchUrl(BASE, '{?count}', { count: 8 }, defaults)).toBe(`${BASE}?count=8`);
+  });
+
+  test('omits an exploded array/object still at its default', () => {
+    const t = '{?tz*}';
+    const defaults = { tz: ['Europe/London'] };
+    expect(buildLaunchUrl(BASE, t, { tz: ['Europe/London'] }, defaults)).toBe(BASE);
+    expect(buildLaunchUrl(BASE, t, { tz: ['Asia/Tokyo'] }, defaults)).toBe(`${BASE}?tz=Asia/Tokyo`);
+  });
+
   test('percent-encodes spaces but keeps commas readable via decode round-trip', () => {
     const v = { mon: '09:00-12:00,13:00-17:00' };
     const url = buildLaunchUrl(BASE, '{?mon}', v);

@@ -29,6 +29,9 @@ function expandVar(spec, values, defaults) {
   const value = values[name];
 
   if (explode) {
+    // Omit an exploded array/object that is still at its (non-empty) default.
+    const def = defaults[name];
+    if (def !== undefined && JSON.stringify(value) === JSON.stringify(def)) return [];
     if (Array.isArray(value)) {
       return value
         .filter((v) => v !== undefined && v !== null && v !== '')
