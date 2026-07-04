@@ -1,9 +1,30 @@
 {{- /*
   Fallback "screen" media for apps whose manifest carries no screenshot/icon.
-  A branded gradient tile showing the app name, so manifest-only apps still read
-  as a screen card. Params: title (required), tag (optional).
+  A branded gradient tile with a Lucide icon (from our @iconify-json/lucide kit)
+  chosen from the app's primary tag, plus the app name — so manifest-only apps
+  still read as a screen card. Params: title (required), tag (optional).
+
+  The icon classes are full literals so Tailwind compiles them (assets/css scans
+  layouts); add a tag here to give a new category its own icon. Anything
+  unmapped falls back to a neutral app-window glyph.
 */ -}}
+{{- $icons := dict
+  "Retail"       "icon-[lucide--store]"
+  "Hospitality"  "icon-[lucide--utensils]"
+  "Business"     "icon-[lucide--briefcase]"
+  "Technology"   "icon-[lucide--rocket]"
+  "Clock"        "icon-[lucide--clock]"
+  "Weather"      "icon-[lucide--cloud-sun]"
+  "Air Quality"  "icon-[lucide--wind]"
+  "News"         "icon-[lucide--newspaper]"
+  "History"      "icon-[lucide--landmark]"
+  "Geography"    "icon-[lucide--globe]"
+  "Quiz"         "icon-[lucide--brain]"
+  "Words"        "icon-[lucide--book-open]"
+  "Quotes"       "icon-[lucide--quote]"
+-}}
+{{- $icon := or (index $icons .tag) "icon-[lucide--app-window]" -}}
 <div class="app-shot-fallback">
-    {{- with .tag }}<span class="app-shot-fallback__tag">{{ . }}</span>{{ end }}
+    <span class="app-shot-fallback__icon {{ $icon }}" aria-hidden="true"></span>
     <span class="app-shot-fallback__name">{{ .title }}</span>
 </div>

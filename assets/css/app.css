@@ -155,13 +155,17 @@
   /* Manifest-driven apps ship no screenshot: a branded gradient tile stands in
      (same aspect ratio, so cards and the detail hero stay uniform). */
   .app-shot-fallback {
-    @apply flex aspect-video w-full flex-col items-center justify-center gap-2 px-6 text-center;
+    @apply flex aspect-video w-full flex-col items-center justify-center gap-4 px-6 text-center;
     background:
       radial-gradient(130% 130% at 0% 0%, rgb(122 90 248 / 32%), transparent 55%),
       linear-gradient(135deg, var(--color-surface-2), var(--color-bg));
   }
-  .app-shot-fallback__tag { @apply font-mono text-[11px] uppercase tracking-[0.16em] text-accent2; }
-  .app-shot-fallback__name { @apply font-display text-2xl font-bold leading-tight text-ink; }
+  .app-shot-fallback__icon {
+    @apply text-[3.25rem] leading-none;
+    color: var(--color-accent2);
+    filter: drop-shadow(0 6px 20px rgb(55 182 255 / 35%));
+  }
+  .app-shot-fallback__name { @apply font-display text-xl font-bold leading-tight text-ink; }
 
   /* Generic settings form, rendered from a manifest by config-manifest.js */
   .cfg-fields { @apply flex flex-col gap-5; }
