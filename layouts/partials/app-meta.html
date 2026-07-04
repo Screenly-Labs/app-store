@@ -35,7 +35,16 @@
        is cached and shared across pages. Parsing the raw string keeps .Content
        intact so we can embed the original JSON verbatim (property order kept). */ -}}
   {{- $raw := $res.Content -}}
-  {{- $m := transform.Unmarshal $raw -}}
+  {{- $parsed := try (transform.Unmarshal $raw) -}}
+  {{- with $parsed.Err -}}
+    {{- errorf "app-meta: manifest %q is not valid JSON: %s" $url . -}}
+  {{- end -}}
+  {{- $m := $parsed.Value -}}
+  {{- /* Fail fast on a malformed/incomplete manifest rather than silently
+       rendering empty titles, links and SEO. */ -}}
+  {{- if or (not $m.name) (not $m.description) (not $m.launch) (not $m.launch.baseUrl) -}}
+    {{- errorf "app-meta: manifest %q is missing a required field (name, description, launch.baseUrl)" $url -}}
+  {{- end -}}
   {{- $tags := or $m.tags slice -}}
   {{- $img := "" -}}{{- with $p.Params.app }}{{ $img = .image }}{{ end -}}
   {{- $out = dict
