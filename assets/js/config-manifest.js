@@ -1,0 +1,184 @@
+// Generic, manifest-driven settings form.
+//
+// The detail page embeds the app's signage-app manifest as JSON (see the
+// app-config.html partial). Here we read its `settings` JSON Schema and render
+// the form controls — one per property, in manifest order — then rebuild the
+// launch URL into #app-form-url from `launch.template` whenever a value changes.
+// No app re-implements its own form: every manifest-driven app shares this code.
+//
+// Supported `x-widget`s (falling back to the JSON Schema type): text, url,
+// number, select (enum), toggle (boolean), timezone, and location-map (a
+// {lat,lng} object). Unknown widgets degrade to a text input.
+
+import { buildLaunchUrl } from './lib/expand-template.js';
+import { initLocationMap } from './lib/location-map.js';
+
+// Which control to render for a settings property.
+function widgetFor(schema) {
+  if (schema['x-widget']) return schema['x-widget'];
+  if (Array.isArray(schema.enum)) return 'select';
+  if (schema.type === 'boolean') return 'toggle';
+  if (schema.type === 'number' || schema.type === 'integer') return 'number';
+  if (schema.type === 'object') return 'location-map';
+  return 'text';
+}
+
+// A labelled wrapper shared by every control.
+function fieldRow(schema, key, control, { labelFor } = {}) {
+  const row = document.createElement('div');
+  row.className = 'cfg-field';
+
+  const label = document.createElement('label');
+  label.className = 'eyebrow';
+  label.textContent = schema.title || key;
+  if (labelFor) label.htmlFor = labelFor;
+  row.append(label, control);
+
+  if (schema.description) {
+    const help = document.createElement('p');
+    help.className = 'cfg-help';
+    help.textContent = schema.description;
+    row.appendChild(help);
+  }
+  return row;
+}
+
+// Populate a <datalist> of IANA time zones when the browser can enumerate them.
+function timezoneList() {
+  const list = document.createElement('datalist');
+  list.id = 'cfg-tz-list';
+  const zones = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : [];
+  for (const zone of zones) {
+    const opt = document.createElement('option');
+    opt.value = zone;
+    list.appendChild(opt);
+  }
+  return list.childElementCount ? list : null;
+}
+
+// Build the control for one property; wire it to `set(key, value)`.
+function renderField(key, schema, widget, set, host) {
+  const id = `cfg-${key}`;
+
+  if (widget === 'select') {
+    const select = document.createElement('select');
+    select.className = 'field mt-2';
+    select.id = id;
+    const labels = schema['x-enumLabels'] || [];
+    (schema.enum || []).forEach((value, i) => {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = labels[i] || value || 'Default';
+      if (value === (schema.default ?? '')) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener('change', () => set(key, select.value));
+    return fieldRow(schema, key, select, { labelFor: id });
+  }
+
+  if (widget === 'toggle') {
+    const wrap = document.createElement('label');
+    wrap.className = 'cfg-toggle mt-2';
+    const box = document.createElement('input');
+    box.type = 'checkbox';
+    box.id = id;
+    box.checked = schema.default === true;
+    const text = document.createElement('span');
+    text.textContent = schema.title || key;
+    wrap.append(box, text);
+    box.addEventListener('change', () => set(key, box.checked));
+    // The toggle carries its own inline label, so don't add a second one.
+    const row = document.createElement('div');
+    row.className = 'cfg-field';
+    row.appendChild(wrap);
+    if (schema.description) {
+      const help = document.createElement('p');
+      help.className = 'cfg-help';
+      help.textContent = schema.description;
+      row.appendChild(help);
+    }
+    return row;
+  }
+
+  if (widget === 'location-map') {
+    const mount = document.createElement('div');
+    mount.className = 'mt-2';
+    initLocationMap(mount, { onChange: ({ lat, lng }) => set(key, { lat, lng }) });
+    return fieldRow(schema, key, mount);
+  }
+
+  // Scalar text-like inputs: text, url, number, timezone.
+  const input = document.createElement('input');
+  input.className = 'field mt-2';
+  input.id = id;
+  input.value = schema.default ?? '';
+  if (widget === 'number') {
+    input.type = 'number';
+    if (schema.minimum !== undefined) input.min = schema.minimum;
+    if (schema.maximum !== undefined) input.max = schema.maximum;
+  } else if (widget === 'url') {
+    input.type = 'url';
+  } else {
+    input.type = 'text';
+  }
+  if (widget === 'timezone') {
+    const list = timezoneList();
+    if (list) {
+      host.appendChild(list);
+      input.setAttribute('list', list.id);
+      input.autocomplete = 'off';
+    }
+    input.placeholder = 'e.g. Europe/London';
+  }
+  input.addEventListener('input', () => set(key, input.value));
+  return fieldRow(schema, key, input, { labelFor: id });
+}
+
+export function initManifestConfig() {
+  const host = document.querySelector('[data-manifest-config]');
+  const urlInput = document.getElementById('app-form-url');
+  if (!host || !urlInput) return;
+
+  const script = host.querySelector('script[data-manifest]');
+  let manifest;
+  try {
+    manifest = JSON.parse(script.textContent);
+  } catch {
+    return;
+  }
+
+  const props = manifest.settings?.properties || {};
+  const launch = manifest.launch || {};
+  const baseUrl = launch.baseUrl || urlInput.dataset.url || '';
+  const template = launch.template || '';
+
+  const fields = host.querySelector('[data-config-fields]');
+  const values = {};
+  const defaults = {};
+  const update = () => {
+    urlInput.value = buildLaunchUrl(baseUrl, template, values, defaults);
+  };
+  const set = (key, value) => {
+    values[key] = value;
+    update();
+  };
+
+  let currentGroup = null;
+  for (const [key, schema] of Object.entries(props)) {
+    defaults[key] = schema.default;
+    values[key] = schema.default;
+
+    const group = schema['x-group'] || null;
+    if (group && group !== currentGroup) {
+      const heading = document.createElement('h3');
+      heading.className = 'cfg-group';
+      heading.textContent = group;
+      fields.appendChild(heading);
+    }
+    currentGroup = group;
+
+    fields.appendChild(renderField(key, schema, widgetFor(schema), set, host));
+  }
+
+  update();
+}

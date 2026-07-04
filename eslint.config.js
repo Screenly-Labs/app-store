@@ -9,6 +9,7 @@ export default [
       'resources/**',
       'node_modules/**',
       'assets/js/vendor/**',
+      '.claude/**',
     ],
   },
   js.configs.recommended,

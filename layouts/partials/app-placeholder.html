@@ -1,0 +1,9 @@
+{{- /*
+  Fallback "screen" media for apps whose manifest carries no screenshot/icon.
+  A branded gradient tile showing the app name, so manifest-only apps still read
+  as a screen card. Params: title (required), tag (optional).
+*/ -}}
+<div class="app-shot-fallback">
+    {{- with .tag }}<span class="app-shot-fallback__tag">{{ . }}</span>{{ end }}
+    <span class="app-shot-fallback__name">{{ .title }}</span>
+</div>
