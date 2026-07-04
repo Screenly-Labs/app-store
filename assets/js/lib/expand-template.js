@@ -37,7 +37,7 @@ function expandVar(spec, values, defaults) {
     if (value && typeof value === 'object') {
       return Object.entries(value)
         .filter(([, v]) => v !== undefined && v !== null && v !== '')
-        .map(([k, v]) => `${name === '' ? k : k}=${encodeToken(String(v))}`);
+        .map(([k, v]) => `${encodeToken(k)}=${encodeToken(String(v))}`);
     }
     return [];
   }

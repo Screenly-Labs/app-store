@@ -8,5 +8,7 @@
 <div id="config" data-manifest-config>
     <h2 class="text-2xl">{{ .title }} settings</h2>
     <div class="cfg-fields mt-6" data-config-fields></div>
-    <script type="application/json" data-manifest>{{ .manifestRaw | safeJS }}</script>
+    {{- /* Neutralise any `</script>` inside the JSON (valid in a string, but it
+       would close this tag early). `<\/` is an equivalent JSON escape. */ -}}
+    <script type="application/json" data-manifest>{{ (replace .manifestRaw "</" "<\\/") | safeJS }}</script>
 </div>

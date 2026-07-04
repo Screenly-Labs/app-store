@@ -140,6 +140,7 @@ export function initManifestConfig() {
   if (!host || !urlInput) return;
 
   const script = host.querySelector('script[data-manifest]');
+  if (!script) return;
   let manifest;
   try {
     manifest = JSON.parse(script.textContent);
