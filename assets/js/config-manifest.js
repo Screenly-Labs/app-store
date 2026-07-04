@@ -73,7 +73,7 @@ function renderField(key, schema, widget, set, host) {
     options.forEach((value, i) => {
       const opt = document.createElement('option');
       opt.value = value;
-      opt.textContent = labels[i] != null ? labels[i] : (value === '' ? 'Default' : String(value));
+      opt.textContent = labels[i] !== undefined ? labels[i] : (value === '' ? 'Default' : String(value));
       if (String(value) === String(schema.default ?? '')) opt.selected = true;
       select.appendChild(opt);
     });
