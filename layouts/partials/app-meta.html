@@ -41,9 +41,10 @@
   {{- end -}}
   {{- $m := $parsed.Value -}}
   {{- /* Fail fast on a malformed/incomplete manifest rather than silently
-       rendering empty titles, links and SEO. */ -}}
-  {{- if or (not $m.name) (not $m.description) (not $m.launch) (not $m.launch.baseUrl) -}}
-    {{- errorf "app-meta: manifest %q is missing a required field (name, description, launch.baseUrl)" $url -}}
+       rendering empty titles, links and SEO. Mirrors the schema's required set
+       (manifestVersion, id, name, description, launch.baseUrl). */ -}}
+  {{- if or (not $m.manifestVersion) (not $m.id) (not $m.name) (not $m.description) (not $m.launch) (not $m.launch.baseUrl) -}}
+    {{- errorf "app-meta: manifest %q is missing a required field (manifestVersion, id, name, description, launch.baseUrl)" $url -}}
   {{- end -}}
   {{- $tags := or $m.tags slice -}}
   {{- $img := "" -}}{{- with $p.Params.app }}{{ $img = .image }}{{ end -}}
