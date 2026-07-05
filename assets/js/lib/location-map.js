@@ -26,6 +26,23 @@ const ICONS = {
   locate: 'icon-[lucide--locate-fixed]',
 };
 
+// Swap a mount over to the quiet, on-theme fallback. Used both when the script
+// itself fails to load and when the API key is rejected for this domain.
+const activeMounts = new Set();
+function showUnavailable(mount) {
+  mount.classList.remove('is-touched');
+  mount.classList.add('loc-map--unavailable');
+  mount.innerHTML = '<p class="loc-map__fallback">Map unavailable — the link still works without a location.</p>';
+}
+
+// Google calls this global when the API key is rejected — e.g. this domain
+// isn't in the key's allowed referrers (as on stage/localhost). Without it,
+// Google paints its own light "Oops! Something went wrong" panel inside our
+// dark UI, which reads as broken; instead we show the same graceful fallback.
+window.gm_authFailure = () => {
+  for (const mount of activeMounts) showUnavailable(mount);
+};
+
 // Load the Maps script once per page and share the promise between callers.
 let mapsPromise;
 function loadGoogleMaps() {
@@ -106,6 +123,7 @@ export function initLocationMap(mount, options = {}) {
   const startZoom = Number(mount.dataset.zoom ?? zoom);
 
   const { canvas, coords, locate, zoomIn, zoomOut } = buildChrome(mount);
+  activeMounts.add(mount);
 
   loadGoogleMaps()
     .then(() => {
@@ -163,7 +181,6 @@ export function initLocationMap(mount, options = {}) {
     })
     .catch(() => {
       // Maps is optional; show a quiet fallback instead of an empty frame.
-      mount.classList.add('loc-map--unavailable');
-      mount.innerHTML = '<p class="loc-map__fallback">Map unavailable — the link still works without a location.</p>';
+      showUnavailable(mount);
     });
 }

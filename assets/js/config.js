@@ -5,6 +5,7 @@
 import { buildQueryUrl } from './lib/query-url.js';
 import { initLocationMap } from './lib/location-map.js';
 import { initWorldClockConfig } from './config-world-clock.js';
+import { initManifestConfig } from './config-manifest.js';
 
 // Location + clock-format form shared by Weather, Air Quality and Clock.
 function initLocationConfig() {
@@ -35,7 +36,9 @@ function initLocationConfig() {
   });
 }
 
-if (document.querySelector('[data-world-clock-config]')) {
+if (document.querySelector('[data-manifest-config]')) {
+  initManifestConfig();
+} else if (document.querySelector('[data-world-clock-config]')) {
   initWorldClockConfig();
 } else {
   initLocationConfig();

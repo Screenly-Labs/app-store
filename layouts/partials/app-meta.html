@@ -1,0 +1,89 @@
+{{- /*
+  Resolve an app's display fields from its signage-app manifest.
+
+  When a content page declares `manifest: <url>` in front matter, the store
+  fetches that manifest at build time (cached by Hugo) and renders the card,
+  detail page, SEO and config form straight from it — the manifest is the single
+  source of truth, so nothing is re-authored by hand here. Pages without a
+  `manifest` fall back to their own front matter, so the existing hand-authored
+  apps are unaffected.
+
+  Returns a dict; callers read the same keys regardless of the source:
+    manifest    parsed manifest map, or false for front-matter apps
+    manifestRaw raw manifest JSON string (property order preserved), or ""
+    title description cardtext url source support image
+    tags (slice)  tagsCsv (string)  tag0 (string)  appconfig (bool)
+
+  See docs/app-manifest.md.
+*/ -}}
+{{- $p := . -}}
+{{- $url := $p.Params.manifest -}}
+{{- $out := dict -}}
+{{- if $url -}}
+  {{- $try := try (resources.GetRemote $url) -}}
+  {{- $res := "" -}}
+  {{- with $try.Err -}}
+    {{- errorf "app-meta: cannot fetch manifest %q: %s" $url . -}}
+  {{- else -}}
+    {{- $res = $try.Value -}}
+  {{- end -}}
+  {{- if not $res -}}
+    {{- errorf "app-meta: manifest %q returned no resource" $url -}}
+  {{- end -}}
+  {{- /* Unmarshal the string, not the resource: transform.Unmarshal mutates a
+       resource's .Content to its re-marshalled (escaped) form, and that resource
+       is cached and shared across pages. Parsing the raw string keeps .Content
+       intact so we can embed the original JSON verbatim (property order kept). */ -}}
+  {{- $raw := $res.Content -}}
+  {{- $parsed := try (transform.Unmarshal $raw) -}}
+  {{- with $parsed.Err -}}
+    {{- errorf "app-meta: manifest %q is not valid JSON: %s" $url . -}}
+  {{- end -}}
+  {{- $m := $parsed.Value -}}
+  {{- /* Fail fast on a malformed/incomplete manifest rather than silently
+       rendering empty titles, links and SEO. Mirrors the schema's required set
+       (manifestVersion, id, name, description, launch.baseUrl). */ -}}
+  {{- if or (not $m.manifestVersion) (not $m.id) (not $m.name) (not $m.description) (not $m.launch) (not $m.launch.baseUrl) -}}
+    {{- errorf "app-meta: manifest %q is missing a required field (manifestVersion, id, name, description, launch.baseUrl)" $url -}}
+  {{- end -}}
+  {{- $tags := or $m.tags slice -}}
+  {{- $img := "" -}}{{- with $p.Params.app }}{{ $img = .image }}{{ end -}}
+  {{- $out = dict
+      "manifest"    $m
+      "manifestRaw" $raw
+      "title"       $m.name
+      "description" $m.description
+      "cardtext"    (or $m.summary $m.description)
+      "url"         $m.launch.baseUrl
+      "source"      $m.source
+      "support"     $m.support
+      "image"       $img
+      "tags"        $tags
+      "tagsCsv"     (delimit $tags ", ")
+      "tag0"        (cond (gt (len $tags) 0) (index $tags 0) "App")
+      "appconfig"   (ne (index $m "settings") nil)
+  -}}
+{{- else -}}
+  {{- $masonry := or $p.Params.masonry "" -}}
+  {{- $tags := slice -}}
+  {{- range (split $masonry ",") }}{{ with (trim . " ") }}{{ $tags = $tags | append . }}{{ end }}{{ end -}}
+  {{- $url := "" -}}{{- with $p.Params.app }}{{ $url = .url }}{{ end -}}
+  {{- $img := "" -}}{{- with $p.Params.app }}{{ $img = .image }}{{ end -}}
+  {{- $src := "" -}}{{- $sup := "" -}}{{- with $p.Params.links }}{{ $src = .source }}{{ $sup = .support }}{{ end -}}
+  {{- $out = dict
+      "manifest"    false
+      "manifestRaw" ""
+      "title"       $p.Title
+      "description" (or $p.Params.description $p.Description)
+      "cardtext"    $p.Params.cardtext
+      "url"         $url
+      "source"      $src
+      "support"     $sup
+      "image"       $img
+      "tags"        $tags
+      "tagsCsv"     $masonry
+      "tag0"        (cond (gt (len $tags) 0) (index $tags 0) "App")
+      "appconfig"   (eq $p.Params.appconfig true)
+  -}}
+{{- end -}}
+{{- return $out -}}

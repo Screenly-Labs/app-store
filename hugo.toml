@@ -7,6 +7,17 @@ enableGitInfo = true
 # No blog/taxonomies/section listings on this site. Keep the output minimal.
 disableKinds = ["taxonomy", "term", "rss", "section"]
 
+# Emit /manifest.json alongside the home page: a pointers-only index of every
+# app's self-hosted manifest (see docs/app-manifest.md).
+[outputs]
+  home = ["HTML", "appindex"]
+
+[outputFormats.appindex]
+  mediaType = "application/json"
+  baseName = "manifest"
+  isPlainText = true
+  notAlternative = true
+
 # Populate <lastmod> in Hugo's generated sitemap: prefer the git commit date,
 # fall back to the file modification time so it is always present.
 [frontmatter]

@@ -1,0 +1,36 @@
+{{- /*
+  /manifest.json — pointers-only index of every app's self-hosted manifest.
+  One entry per distinct app origin (dedup so the RSS reader's many curated feed
+  pages collapse to a single manifest). Each app publishes the actual file at
+  /.well-known/signage-app.json on its own origin; see docs/app-manifest.md.
+*/ -}}
+{{- $apps := slice -}}
+{{- $seen := slice -}}
+{{- range .Site.RegularPages -}}
+  {{- /* A page points at its manifest either directly (`manifest:` front
+     matter, manifest-driven apps) or via its launch origin (`app.url`, the
+     hand-authored apps, whose manifest sits at the well-known path). */ -}}
+  {{- $manifest := "" -}}
+  {{- with .Params.manifest -}}
+    {{- $manifest = . -}}
+  {{- else -}}
+    {{- with .Params.app -}}{{ with .url -}}
+      {{- $u := urls.Parse . -}}
+      {{- $manifest = printf "%s://%s/.well-known/signage-app.json" $u.Scheme $u.Host -}}
+    {{- end }}{{ end -}}
+  {{- end -}}
+  {{- with $manifest -}}
+    {{- $u := urls.Parse . -}}
+    {{- $origin := printf "%s://%s" $u.Scheme $u.Host -}}
+    {{- if not (in $seen $origin) -}}
+      {{- $seen = $seen | append $origin -}}
+      {{- $id := index (split $u.Host ".") 0 -}}
+      {{- $apps = $apps | append (dict "id" $id "manifest" .) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $out := dict
+  "indexVersion" "1"
+  "updated" (.Site.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+  "apps" (sort $apps "id") -}}
+{{ jsonify (dict "indent" "  ") $out }}
