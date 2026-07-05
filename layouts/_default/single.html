@@ -27,14 +27,21 @@
                 {{ if $meta.appconfig }}
                 <div class="modal-instance">
                     <a class="btn-primary modal-trigger" href="#">Configure settings</a>
-                    <div class="modal-container">
+                    <div class="modal-container" role="dialog" aria-modal="true" aria-label="App settings">
                         <div class="modal-content">
-                            <div class="modal-close modal-close-cross" role="button" aria-label="Close"></div>
-                            {{ if $meta.manifest }}
-                            {{ partial "app-config.html" $meta }}
-                            {{ else }}
-                            {{ .Content }}
-                            {{ end }}
+                            <div class="modal-header">
+                                <span class="modal-hint">Esc or click outside to close</span>
+                                <button type="button" class="modal-close" aria-label="Close settings">
+                                    {{ partial "icon.html" "x" }}
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ if $meta.manifest }}
+                                {{ partial "app-config.html" $meta }}
+                                {{ else }}
+                                {{ .Content }}
+                                {{ end }}
+                            </div>
                         </div>
                     </div>
                 </div>
