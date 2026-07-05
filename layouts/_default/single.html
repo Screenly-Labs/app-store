@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{ $meta := partial "app-meta.html" . }}
+{{ $meta := partialCached "app-meta.html" . .RelPermalink }}
 <section class="wrap py-12 sm:py-16">
     {{ partial "detail-head.html" . }}
 

@@ -20,19 +20,32 @@ function widgetFor(schema) {
   if (schema.type === 'boolean') return 'toggle';
   if (schema.type === 'number' || schema.type === 'integer') return 'number';
   if (schema.type === 'object') return 'location-map';
+  if (schema.type === 'array') return 'array';
   return 'text';
 }
 
-// A labelled wrapper shared by every control.
+// A labelled wrapper shared by every control. When the control is a real form
+// element we bind a <label for>; custom controls (e.g. the location map) have no
+// focusable input, so we use a plain styled caption and wire aria-labelledby.
 function fieldRow(schema, key, control, { labelFor } = {}) {
   const row = document.createElement('div');
   row.className = 'cfg-field';
 
-  const label = document.createElement('label');
-  label.className = 'eyebrow';
-  label.textContent = schema.title || key;
-  if (labelFor) label.htmlFor = labelFor;
-  row.append(label, control);
+  const captionText = schema.title || key;
+  let caption;
+  if (labelFor) {
+    caption = document.createElement('label');
+    caption.htmlFor = labelFor;
+  } else {
+    caption = document.createElement('span');
+    const captionId = `cfg-lbl-${key}`;
+    caption.id = captionId;
+    control.setAttribute('role', 'group');
+    control.setAttribute('aria-labelledby', captionId);
+  }
+  caption.className = 'eyebrow block';
+  caption.textContent = captionText;
+  row.append(caption, control);
 
   if (schema.description) {
     const help = document.createElement('p');
@@ -43,22 +56,33 @@ function fieldRow(schema, key, control, { labelFor } = {}) {
   return row;
 }
 
-// Populate a <datalist> of IANA time zones when the browser can enumerate them.
-function timezoneList() {
+// One shared <datalist> of IANA time zones for all timezone fields (avoids
+// duplicate ids), created lazily when the browser can enumerate zones.
+function timezoneList(host) {
+  const existing = host.querySelector('#cfg-tz-list');
+  if (existing) return existing;
+  const zones = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : [];
+  if (!zones.length) return null;
   const list = document.createElement('datalist');
   list.id = 'cfg-tz-list';
-  const zones = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : [];
   for (const zone of zones) {
     const opt = document.createElement('option');
     opt.value = zone;
     list.appendChild(opt);
   }
-  return list.childElementCount ? list : null;
+  host.appendChild(list);
+  return list;
 }
 
 // Build the control for one property; wire it to `set(key, value)`.
 function renderField(key, schema, widget, set, host) {
   const id = `cfg-${key}`;
+
+  // Array settings (e.g. World Clock's repeated `{?tz*}`) need a bespoke
+  // add/remove-row UI, which the generic renderer doesn't provide. Skip them
+  // rather than emit a scalar text input that would send the wrong value type.
+  // (No manifest-driven app currently uses one; World Clock has its own form.)
+  if (widget === 'array') return null;
 
   if (widget === 'select') {
     const select = document.createElement('select');
@@ -134,9 +158,8 @@ function renderField(key, schema, widget, set, host) {
     input.type = 'text';
   }
   if (widget === 'timezone') {
-    const list = timezoneList();
+    const list = timezoneList(host);
     if (list) {
-      host.appendChild(list);
       input.setAttribute('list', list.id);
       input.autocomplete = 'off';
     }
@@ -193,7 +216,8 @@ export function initManifestConfig() {
     }
     currentGroup = group;
 
-    fields.appendChild(renderField(key, schema, widgetFor(schema), set, host));
+    const field = renderField(key, schema, widgetFor(schema), set, host);
+    if (field) fields.appendChild(field);
   }
 
   update();

@@ -1,5 +1,5 @@
 {{- /* SEO meta: canonical, description, Open Graph, Twitter cards, JSON-LD. */ -}}
-{{- $meta := partial "app-meta.html" . -}}
+{{- $meta := partialCached "app-meta.html" . .RelPermalink -}}
 {{- $title := cond .IsHome (printf "%s for Any Screen" .Site.Title) (printf "%s - %s" $meta.title .Site.Title) -}}
 {{- $desc := or $meta.description .Site.Params.description -}}
 

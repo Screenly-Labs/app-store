@@ -47,7 +47,7 @@
 
     <div class="app-grid mt-10" data-app-grid>
         {{ range .Site.RegularPages.ByWeight }}
-        {{ $meta := partial "app-meta.html" . }}
+        {{ $meta := partialCached "app-meta.html" . .RelPermalink }}
         <a class="card-screen reveal" href="{{ .RelPermalink }}" data-categories="{{ $meta.tagsCsv }}">
             <div class="card-screen__media">
                 {{ with $meta.image }}
