@@ -201,27 +201,35 @@
   /* Section divider rule */
   .rule { @apply border-0 border-t border-line; }
 
-  /* Modal */
+  /* Modal — the backdrop is click-to-dismiss (hence the pointer cursor); the
+     panel itself resets to a normal cursor and carries its own close control. */
   .modal-container {
-    @apply fixed inset-0 z-50 hidden items-center justify-center p-4;
+    @apply fixed inset-0 z-50 hidden cursor-pointer items-center justify-center p-4;
     background: rgb(6 4 12 / 78%);
     backdrop-filter: blur(6px);
   }
   .modal-container.modal-active { @apply flex; }
   .modal-content {
-    @apply relative w-full max-w-2xl overflow-auto rounded-2xl border border-line-2 bg-surface p-6 sm:p-8;
+    @apply relative flex w-full max-w-2xl cursor-auto flex-col overflow-hidden rounded-2xl border border-line-2 bg-surface;
     max-height: 88vh;
     box-shadow: var(--shadow, 0 30px 80px -20px rgb(0 0 0 / 70%));
   }
+  .modal-active .modal-content { animation: modal-in 0.18s ease-out both; }
+  @keyframes modal-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.985); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* Sticky bar so the close control never scrolls away on a long settings form */
+  .modal-header {
+    @apply sticky top-0 z-10 flex items-center justify-end gap-3 border-b border-line bg-surface px-6 py-3 sm:px-8;
+  }
+  .modal-hint { @apply hidden font-mono text-[11px] uppercase tracking-[0.14em] text-faint sm:inline; }
   .modal-close {
-    @apply absolute right-4 top-4 h-8 w-8 cursor-pointer rounded-full border border-line-2;
+    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line-2 text-[1.05rem] leading-none text-dim transition-colors;
   }
-  .modal-close::before, .modal-close::after {
-    content: ""; @apply absolute left-1/2 top-1/2 h-px w-3.5 bg-dim;
-  }
-  .modal-close::before { transform: translate(-50%, -50%) rotate(45deg); }
-  .modal-close::after { transform: translate(-50%, -50%) rotate(-45deg); }
-  .modal-close:hover { border-color: var(--color-accent); }
+  .modal-close:hover { @apply bg-surface-2 text-ink; border-color: var(--color-accent); }
+  .modal-body { @apply overflow-auto px-6 py-6 sm:px-8; }
 
   /* Location picker map (reusable component, see assets/js/lib/location-map.js) */
   .loc-map {

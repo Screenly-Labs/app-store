@@ -61,6 +61,30 @@ export function initModals() {
   const root = document.createElement('div');
   document.body.append(root);
 
+  // Remember what to hand focus back to, so closing returns the user to the
+  // control they opened from rather than dropping focus to the page top.
+  let returnFocus = null;
+
+  const open = (modal, trigger) => {
+    returnFocus = trigger;
+    modal.classList.add('modal-active');
+    // Move focus into the dialog so Esc/Tab work immediately and assistive
+    // tech announces it; the close button is the obvious first stop.
+    modal.querySelector('.modal-close')?.focus();
+  };
+
+  const closeActive = () => {
+    let closed = false;
+    for (const modal of root.querySelectorAll('.modal-active')) {
+      modal.classList.remove('modal-active');
+      closed = true;
+    }
+    if (closed && returnFocus) {
+      returnFocus.focus();
+      returnFocus = null;
+    }
+  };
+
   for (const instance of instances) {
     const modal = instance.querySelector('.modal-container');
     const trigger = instance.querySelector('.modal-trigger');
@@ -69,16 +93,13 @@ export function initModals() {
     root.append(modal);
     trigger.addEventListener('click', (event) => {
       event.preventDefault();
-      modal.classList.add('modal-active');
+      open(modal, trigger);
     });
     modal.addEventListener('click', (event) => {
-      if (event.target === modal) modal.classList.remove('modal-active');
+      if (event.target === modal) closeActive();
     });
   }
 
-  const closeActive = () => {
-    for (const modal of root.querySelectorAll('.modal-active')) modal.classList.remove('modal-active');
-  };
   root.addEventListener('click', (event) => {
     if (event.target.closest('.modal-close')) closeActive();
   });
