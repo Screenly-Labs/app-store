@@ -108,6 +108,13 @@ function renderField(key, schema, widget, set, host) {
   if (widget === 'location-map') {
     const mount = document.createElement('div');
     mount.className = 'mt-2';
+    // Seed the map from a schema default (initLocationMap reads data-lat/lng),
+    // so the control opens on the app's default rather than the generic centre.
+    const def = schema.default;
+    if (def && def.lat !== undefined && def.lng !== undefined) {
+      mount.dataset.lat = def.lat;
+      mount.dataset.lng = def.lng;
+    }
     initLocationMap(mount, { onChange: ({ lat, lng }) => set(key, { lat, lng }) });
     return fieldRow(schema, key, mount);
   }
