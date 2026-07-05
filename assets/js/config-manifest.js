@@ -19,8 +19,13 @@ function widgetFor(schema) {
   if (Array.isArray(schema.enum)) return 'select';
   if (schema.type === 'boolean') return 'toggle';
   if (schema.type === 'number' || schema.type === 'integer') return 'number';
-  if (schema.type === 'object') return 'location-map';
-  if (schema.type === 'array') return 'array';
+  // Only a {lat,lng} object is a location map; other objects/arrays have no
+  // generic control, so mark them unsupported (skipped) rather than mis-render.
+  if (schema.type === 'object') {
+    const props = schema.properties || {};
+    return props.lat && props.lng ? 'location-map' : 'unsupported';
+  }
+  if (schema.type === 'array') return 'unsupported';
   return 'text';
 }
 
@@ -78,11 +83,11 @@ function timezoneList(host) {
 function renderField(key, schema, widget, set, host) {
   const id = `cfg-${key}`;
 
-  // Array settings (e.g. World Clock's repeated `{?tz*}`) need a bespoke
-  // add/remove-row UI, which the generic renderer doesn't provide. Skip them
-  // rather than emit a scalar text input that would send the wrong value type.
+  // Settings with no generic control — arrays (e.g. World Clock's repeated
+  // `{?tz*}`, which needs a bespoke add/remove-row UI) and non-location objects.
+  // Skip them rather than emit a scalar text input with the wrong value type.
   // (No manifest-driven app currently uses one; World Clock has its own form.)
-  if (widget === 'array') return null;
+  if (widget === 'unsupported') return null;
 
   if (widget === 'select') {
     const select = document.createElement('select');
