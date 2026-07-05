@@ -5,7 +5,7 @@
         {{ $main := resources.Get "js/main.js" | js.Build (dict "minify" true "target" "es2018") | fingerprint }}
         <script src="{{ $main.RelPermalink }}" integrity="{{ $main.Data.Integrity }}"></script>
 
-        {{ if .Params.appconfig }}
+        {{ if (partialCached "app-meta.html" . .RelPermalink).appconfig }}
         <!-- App configuration page behaviour -->
         {{ $cfg := resources.Get "js/config.js" | js.Build (dict "minify" true "target" "es2018") | fingerprint }}
         <script src="{{ $cfg.RelPermalink }}" integrity="{{ $cfg.Data.Integrity }}"></script>

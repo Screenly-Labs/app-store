@@ -7,17 +7,25 @@
 {{- $apps := slice -}}
 {{- $seen := slice -}}
 {{- range .Site.RegularPages -}}
-  {{- with .Params.app -}}
-    {{- with .url -}}
+  {{- /* A page points at its manifest either directly (`manifest:` front
+     matter, manifest-driven apps) or via its launch origin (`app.url`, the
+     hand-authored apps, whose manifest sits at the well-known path). */ -}}
+  {{- $manifest := "" -}}
+  {{- with .Params.manifest -}}
+    {{- $manifest = . -}}
+  {{- else -}}
+    {{- with .Params.app -}}{{ with .url -}}
       {{- $u := urls.Parse . -}}
-      {{- $origin := printf "%s://%s" $u.Scheme $u.Host -}}
-      {{- if not (in $seen $origin) -}}
-        {{- $seen = $seen | append $origin -}}
-        {{- $id := index (split $u.Host ".") 0 -}}
-        {{- $apps = $apps | append (dict
-          "id" $id
-          "manifest" (printf "%s/.well-known/signage-app.json" $origin)) -}}
-      {{- end -}}
+      {{- $manifest = printf "%s://%s/.well-known/signage-app.json" $u.Scheme $u.Host -}}
+    {{- end }}{{ end -}}
+  {{- end -}}
+  {{- with $manifest -}}
+    {{- $u := urls.Parse . -}}
+    {{- $origin := printf "%s://%s" $u.Scheme $u.Host -}}
+    {{- if not (in $seen $origin) -}}
+      {{- $seen = $seen | append $origin -}}
+      {{- $id := index (split $u.Host ".") 0 -}}
+      {{- $apps = $apps | append (dict "id" $id "manifest" .) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

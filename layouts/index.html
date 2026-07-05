@@ -47,15 +47,20 @@
 
     <div class="app-grid mt-10" data-app-grid>
         {{ range .Site.RegularPages.ByWeight }}
-        <a class="card-screen reveal" href="{{ .RelPermalink }}" data-categories="{{ .Params.masonry }}">
+        {{ $meta := partialCached "app-meta.html" . .RelPermalink }}
+        <a class="card-screen reveal" href="{{ .RelPermalink }}" data-categories="{{ $meta.tagsCsv }}">
             <div class="card-screen__media">
-                {{ partial "optimg.html" (dict "src" (printf "img/%s" .Params.app.image) "alt" .Title "widths" (slice 400 800) "sizes" "(min-width:1024px) 360px, (min-width:640px) 45vw, 90vw") }}
+                {{ with $meta.image }}
+                {{ partial "optimg.html" (dict "src" (printf "img/%s" .) "alt" $meta.title "widths" (slice 400 800) "sizes" "(min-width:1024px) 360px, (min-width:640px) 45vw, 90vw") }}
+                {{ else }}
+                {{ partial "app-placeholder.html" (dict "title" $meta.title "tag" $meta.tag0) }}
+                {{ end }}
             </div>
             <div class="card-screen__body">
-                <span class="tag">{{ index (split .Params.masonry ",") 0 | strings.TrimSpace }}</span>
-                <h3 class="mt-2 text-xl">{{ .Title }}</h3>
-                <p class="mt-1 text-sm text-dim">{{ .Params.cardtext }}</p>
-                <span class="mt-4 link-accent text-sm">{{ if .Params.appconfig }}Configure{{ else }}Get app{{ end }} {{ partial "icon.html" "arrow-right" }}</span>
+                <span class="tag">{{ $meta.tag0 }}</span>
+                <h3 class="mt-2 text-xl">{{ $meta.title }}</h3>
+                <p class="mt-1 text-sm text-dim">{{ $meta.cardtext }}</p>
+                <span class="mt-4 link-accent text-sm">{{ if $meta.appconfig }}Configure{{ else }}Get app{{ end }} {{ partial "icon.html" "arrow-right" }}</span>
             </div>
         </a>
         {{ end }}
