@@ -115,12 +115,12 @@ export function initWorldClockConfig() {
   // link still works (the app falls back to its own default world view).
   const emptyHint = document.createElement('p');
   emptyHint.className = 'wc-empty';
-  emptyHint.textContent = 'No cities yet — the link will show a default world view.';
+  emptyHint.textContent = 'No cities yet. The link will show a default world view.';
 
   // Shown once the board is full, so disabling "Add city" doesn't look broken.
   const limitHint = document.createElement('p');
   limitHint.className = 'wc-empty';
-  limitHint.textContent = `That's the most that fits — up to ${MAX_CLOCKS} cities.`;
+  limitHint.textContent = `That's the most that fits: up to ${MAX_CLOCKS} cities.`;
 
   const rowCount = () => clocksEl.querySelectorAll('[data-wc-row]').length;
 
