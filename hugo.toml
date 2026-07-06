@@ -25,8 +25,8 @@ disableKinds = ["taxonomy", "term", "rss", "section"]
 
 [params]
   brand = "Screenly"
-  tagline = "Run free on Anthias, or managed with Screenly"
-  description = "Free, vendor-agnostic digital signage apps for any smart TV or signage player. Run them free and open-source with Anthias, or fully managed with Screenly."
+  tagline = "Free apps for any screen, on any platform"
+  description = "Free, vendor-agnostic digital signage apps for any smart TV or signage player. Every app is a plain URL, so it runs on whatever platform you already use — including free and open-source Anthias and fully managed Screenly."
   email = "hello@screenly.io"
   # Default image used for social sharing (Open Graph / Twitter cards).
   ogimage = "img/hero-3.jpg"
