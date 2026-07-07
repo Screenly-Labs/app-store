@@ -32,7 +32,7 @@ const activeMounts = new Set();
 function showUnavailable(mount) {
   mount.classList.remove('is-touched');
   mount.classList.add('loc-map--unavailable');
-  mount.innerHTML = '<p class="loc-map__fallback">Map unavailable — the link still works without a location.</p>';
+  mount.innerHTML = '<p class="loc-map__fallback">Map unavailable. The link still works without a location.</p>';
 }
 
 // Google calls this global when the API key is rejected — e.g. this domain
