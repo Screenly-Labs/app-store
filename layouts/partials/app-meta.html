@@ -6,7 +6,9 @@
   detail page, SEO and config form straight from it — the manifest is the single
   source of truth, so nothing is re-authored by hand here. Pages without a
   `manifest` fall back to their own front matter, so the existing hand-authored
-  apps are unaffected.
+  apps are unaffected. A page may also set `manifestLocal:` to a page-bundle copy
+  of the manifest, rendered in place of the remote fetch while the origin is
+  still propagating (see the fetch block below).
 
   Returns a dict; callers read the same keys regardless of the source:
     manifest    parsed manifest map, or false for front-matter apps
@@ -20,21 +22,37 @@
 {{- $url := $p.Params.manifest -}}
 {{- $out := dict -}}
 {{- if $url -}}
-  {{- $try := try (resources.GetRemote $url) -}}
-  {{- $res := "" -}}
-  {{- with $try.Err -}}
-    {{- errorf "app-meta: cannot fetch manifest %q: %s" $url . -}}
+  {{- /* Read the manifest JSON as a raw string. Normally we fetch it from the
+       app's origin (`manifest:` well-known URL). While an origin is still
+       propagating, a page can ship the manifest as a local page-bundle resource
+       and point `manifestLocal:` at it; we render from that copy but keep
+       `manifest:` as the canonical URL (used by the published index and the
+       switch-back). Remove the resource and `manifestLocal` once the origin
+       serves the manifest. */ -}}
+  {{- $raw := "" -}}
+  {{- with $p.Params.manifestLocal -}}
+    {{- $res := $p.Resources.GetMatch . -}}
+    {{- if not $res -}}
+      {{- errorf "app-meta: local manifest %q not found in %s" . $p.RelPermalink -}}
+    {{- end -}}
+    {{- $raw = $res.Content -}}
   {{- else -}}
-    {{- $res = $try.Value -}}
+    {{- $try := try (resources.GetRemote $url) -}}
+    {{- $res := "" -}}
+    {{- with $try.Err -}}
+      {{- errorf "app-meta: cannot fetch manifest %q: %s" $url . -}}
+    {{- else -}}
+      {{- $res = $try.Value -}}
+    {{- end -}}
+    {{- if not $res -}}
+      {{- errorf "app-meta: manifest %q returned no resource" $url -}}
+    {{- end -}}
+    {{- /* Unmarshal the string, not the resource: transform.Unmarshal mutates a
+         resource's .Content to its re-marshalled (escaped) form, and that resource
+         is cached and shared across pages. Parsing the raw string keeps .Content
+         intact so we can embed the original JSON verbatim (property order kept). */ -}}
+    {{- $raw = $res.Content -}}
   {{- end -}}
-  {{- if not $res -}}
-    {{- errorf "app-meta: manifest %q returned no resource" $url -}}
-  {{- end -}}
-  {{- /* Unmarshal the string, not the resource: transform.Unmarshal mutates a
-       resource's .Content to its re-marshalled (escaped) form, and that resource
-       is cached and shared across pages. Parsing the raw string keeps .Content
-       intact so we can embed the original JSON verbatim (property order kept). */ -}}
-  {{- $raw := $res.Content -}}
   {{- $parsed := try (transform.Unmarshal $raw) -}}
   {{- with $parsed.Err -}}
     {{- errorf "app-meta: manifest %q is not valid JSON: %s" $url . -}}
