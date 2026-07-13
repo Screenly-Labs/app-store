@@ -108,6 +108,9 @@ hints on top with `x-*` keywords (which validators ignore):
 | `url`          | `string`          | validated as a URL |
 | `location-map` | `object` `{lat,lng}` | draggable map; bind it to a single object property so the pair stays grouped |
 | `timezone`     | `string`          | IANA tz picker |
+| `date`         | `string`          | native date picker; value is `YYYY-MM-DD`. Also inferred from `"format": "date"` |
+| `time`         | `string`          | native time picker (with seconds); value is `HH:MM:SS`. Also inferred from `"format": "time"` |
+| `datetime`     | `string`          | native date-and-time picker (with seconds); value is ISO 8601 `YYYY-MM-DDTHH:MM:SS`. Also inferred from `"format": "date-time"` |
 
 Consumers that don't recognise a widget fall back to the type's default control,
 so a manifest is never unrenderable.
