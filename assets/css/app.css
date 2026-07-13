@@ -274,16 +274,13 @@
   .loc-map__btn:hover { background: var(--color-surface-2); border-color: var(--color-accent); }
   .loc-map__btn.is-busy { @apply pointer-events-none opacity-60; }
 
-  /* World-clock config: a board of cities the viewer assembles. Each row wraps
-     on narrow screens; the zone and label share the space, remove sits at end. */
-  .wc-clocks { @apply flex flex-col gap-3; }
-  .wc-row { @apply flex flex-wrap items-center gap-2; }
-  .wc-row__field { @apply min-w-0 flex-1; flex-basis: 9rem; }
-  .wc-empty { @apply mt-3 text-sm text-faint; }
-  .wc-check {
-    @apply h-4 w-4 shrink-0 cursor-pointer rounded;
-    accent-color: var(--color-accent);
-  }
+  /* Manifest array widget: a group of rows the viewer assembles (e.g. World
+     Clock's cities). Each row wraps on narrow screens; the sub-fields share the
+     space, remove sits at end. */
+  .cfg-rows { @apply flex flex-col gap-3; }
+  .cfg-row { @apply flex flex-wrap items-center gap-2; }
+  .cfg-row__field { @apply min-w-0 flex-1; flex-basis: 9rem; }
+  .cfg-empty { @apply mt-3 text-sm text-faint; }
 
   /* Live coordinate readout chip. */
   .loc-map__readout {
