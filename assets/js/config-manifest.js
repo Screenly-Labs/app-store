@@ -8,15 +8,16 @@
 //
 // Supported `x-widget`s (falling back to the JSON Schema type): text, url,
 // number, select (enum), toggle (boolean), timezone, date, time, datetime
-// (native pickers, also inferred from JSON Schema `format`: date/time/date-time),
-// and location-map (a {lat,lng} object). An `array` property renders as a
-// repeated group of rows
+// (a custom calendar + clock picker, also inferred from JSON Schema `format`:
+// date/time/date-time), and location-map (a {lat,lng} object). An `array`
+// property renders as a repeated group of rows
 // (e.g. World Clock's cities), each row composed into one token via the item's
 // `x-format`. Unknown widgets degrade to a text input.
 
 import { buildLaunchUrl } from './lib/expand-template.js';
 import { applyItemFormat } from './lib/item-format.js';
 import { initLocationMap } from './lib/location-map.js';
+import { createDateTimePicker } from './lib/datetime-picker.js';
 
 // Normalise the date/time family to one internal name each, so both an explicit
 // `x-widget` and a JSON Schema `format` land on the same native picker.
@@ -267,7 +268,14 @@ function renderField(key, schema, widget, set, host) {
     return fieldRow(schema, key, mount);
   }
 
-  // Scalar text-like inputs: text, url, number, timezone, date, time, datetime.
+  // Date / time / datetime use a custom picker (native datetime-local has no
+  // usable time popup on several browsers); it emits the same ISO 8601 strings.
+  if (widget === 'date' || widget === 'time' || widget === 'datetime') {
+    const picker = createDateTimePicker({ mode: widget, id, initial: schema.default, onChange: (v) => set(key, v) });
+    return fieldRow(schema, key, picker, { labelFor: id });
+  }
+
+  // Scalar text-like inputs: text, url, number, timezone.
   const input = document.createElement('input');
   input.className = 'field mt-2';
   input.id = id;
@@ -278,14 +286,6 @@ function renderField(key, schema, widget, set, host) {
     if (schema.maximum !== undefined) input.max = schema.maximum;
   } else if (widget === 'url') {
     input.type = 'url';
-  } else if (widget === 'date') {
-    input.type = 'date';
-  } else if (widget === 'time') {
-    input.type = 'time';
-    input.step = 1; // allow seconds, matching ISO 8601 HH:MM:SS
-  } else if (widget === 'datetime') {
-    input.type = 'datetime-local';
-    input.step = 1; // allow seconds, so the value is a full ISO 8601 instant
   } else {
     input.type = 'text';
   }

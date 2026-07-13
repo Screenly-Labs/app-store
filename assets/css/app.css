@@ -194,27 +194,85 @@
   .field {
     @apply w-full rounded-xl border border-line bg-bg-2 px-4 py-3 font-mono text-sm text-ink;
   }
-  /* Native date/time pickers: render the calendar/clock indicator and the
-     browser popup in dark mode to match the surface, and tint the picker glyph
-     so it reads on the dark field instead of a near-invisible black. */
-  .field[type="date"],
-  .field[type="time"],
-  .field[type="datetime-local"] {
-    color-scheme: dark;
-  }
-  .field[type="date"]::-webkit-calendar-picker-indicator,
-  .field[type="time"]::-webkit-calendar-picker-indicator,
-  .field[type="datetime-local"]::-webkit-calendar-picker-indicator {
+
+  /* Date / time picker (assets/js/lib/datetime-picker.js) --------------------
+     A field-styled trigger that discloses an inline calendar and a segmented
+     mono clock. Built from the store's own tokens so it reads as one system. */
+  .dtp { @apply relative; }
+  .dtp__trigger {
+    @apply flex w-full items-center justify-between gap-3 text-left;
     cursor: pointer;
-    opacity: 0.6;
-    filter: invert(1);
-    transition: opacity 0.15s;
   }
-  .field[type="date"]:hover::-webkit-calendar-picker-indicator,
-  .field[type="time"]:hover::-webkit-calendar-picker-indicator,
-  .field[type="datetime-local"]:hover::-webkit-calendar-picker-indicator {
-    opacity: 1;
+  .dtp__trigger:hover { border-color: var(--color-line-2); }
+  .dtp__trigger[aria-expanded="true"] { border-color: color-mix(in srgb, var(--color-accent) 60%, transparent); }
+  .dtp__trigger > span[class*="icon-"] { @apply shrink-0; color: var(--color-dim); }
+  .dtp__value--empty { color: var(--color-faint); }
+
+  .dtp__panel {
+    @apply mt-2 max-w-sm rounded-xl border p-4;
+    border-color: var(--color-line-2);
+    background: linear-gradient(180deg, var(--color-surface-2), var(--color-surface));
+    box-shadow: 0 20px 50px -24px rgb(0 0 0 / 70%);
+    animation: dtp-in 0.14s ease-out both;
   }
+  @keyframes dtp-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+  .dtp__calhead { @apply mb-2 flex items-center justify-between; }
+  .dtp__month { @apply font-display text-sm font-bold tracking-tight text-ink; }
+  .dtp__nav {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-lg border text-dim transition-colors;
+    border-color: var(--color-line);
+  }
+  .dtp__nav:hover { @apply text-ink; background: var(--color-surface-2); border-color: var(--color-accent); }
+
+  .dtp__weekdays {
+    @apply grid grid-cols-7 gap-1 pb-1 text-center font-mono text-[10px] uppercase tracking-[0.1em];
+    color: var(--color-faint);
+  }
+  .dtp__grid { @apply grid grid-cols-7 gap-1; }
+  .dtp__day {
+    @apply flex aspect-square items-center justify-center rounded-lg font-mono text-[13px] text-dim transition-colors;
+  }
+  .dtp__day:hover { background: var(--color-surface-2); color: var(--color-ink); }
+  .dtp__day.is-outside { color: var(--color-faint); opacity: 0.5; }
+  .dtp__day.is-today { box-shadow: inset 0 0 0 1px var(--color-accent2); color: var(--color-ink); }
+  .dtp__day.is-selected {
+    color: #fff;
+    background: linear-gradient(120deg, var(--color-accent), var(--color-accent2));
+    box-shadow: 0 6px 16px -8px var(--color-accent);
+  }
+
+  .dtp__divider { @apply my-4 border-0 border-t; border-color: var(--color-line); }
+  .dtp__time { @apply flex flex-col items-center; }
+  .dtp__eyebrow {
+    @apply mb-3 self-start font-mono text-[11px] uppercase tracking-[0.14em];
+    color: var(--color-accent2);
+  }
+  .dtp__clock { @apply flex items-center justify-center gap-1; }
+  .dtp__colon { @apply font-mono text-2xl; color: var(--color-faint); }
+  .dtp__seg { @apply flex flex-col items-center gap-1; }
+  .dtp__num {
+    @apply w-14 rounded-lg border bg-bg-2 py-1.5 text-center font-mono text-2xl font-bold text-ink;
+    border-color: var(--color-line);
+  }
+  .dtp__num:focus { outline: none; border-color: var(--color-accent2); }
+
+  .dtp__footer { @apply mt-4 flex items-center gap-2; }
+  .dtp__spacer { @apply flex-1; }
+  .dtp__now {
+    @apply inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-mono text-xs uppercase tracking-[0.08em] transition-colors;
+    color: var(--color-live);
+  }
+  .dtp__now:hover { background: color-mix(in srgb, var(--color-live) 12%, transparent); }
+  .dtp__clear {
+    @apply rounded-lg px-3 py-1.5 font-mono text-xs uppercase tracking-[0.08em] text-dim transition-colors;
+  }
+  .dtp__clear:hover { @apply text-ink; background: var(--color-surface-2); }
+  .dtp__done {
+    @apply rounded-lg px-4 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-white transition-transform;
+    background: linear-gradient(120deg, var(--color-accent), var(--color-accent2));
+  }
+  .dtp__done:hover { transform: translateY(-1px); }
 
   /* Breadcrumbs */
   .breadcrumbs { @apply flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-faint; }
