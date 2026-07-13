@@ -7,8 +7,10 @@
 // No app re-implements its own form: every manifest-driven app shares this code.
 //
 // Supported `x-widget`s (falling back to the JSON Schema type): text, url,
-// number, select (enum), toggle (boolean), timezone, and location-map (a
-// {lat,lng} object). An `array` property renders as a repeated group of rows
+// number, select (enum), toggle (boolean), timezone, date, time, datetime
+// (native pickers, also inferred from JSON Schema `format`: date/time/date-time),
+// and location-map (a {lat,lng} object). An `array` property renders as a
+// repeated group of rows
 // (e.g. World Clock's cities), each row composed into one token via the item's
 // `x-format`. Unknown widgets degrade to a text input.
 
@@ -16,9 +18,22 @@ import { buildLaunchUrl } from './lib/expand-template.js';
 import { applyItemFormat } from './lib/item-format.js';
 import { initLocationMap } from './lib/location-map.js';
 
+// Normalise the date/time family to one internal name each, so both an explicit
+// `x-widget` and a JSON Schema `format` land on the same native picker.
+const DATETIME_WIDGET = {
+  date: 'date',
+  time: 'time',
+  datetime: 'datetime',
+  'datetime-local': 'datetime',
+  'date-time': 'datetime',
+};
+
 // Which control to render for a settings property.
 function widgetFor(schema) {
-  if (schema['x-widget']) return schema['x-widget'];
+  if (schema['x-widget']) return DATETIME_WIDGET[schema['x-widget']] || schema['x-widget'];
+  // Honour JSON Schema's own `format` for string fields so a manifest can ask
+  // for a picker with standard vocabulary (no x-widget needed).
+  if (schema.type === 'string' && DATETIME_WIDGET[schema.format]) return DATETIME_WIDGET[schema.format];
   if (Array.isArray(schema.enum)) return 'select';
   if (schema.type === 'boolean') return 'toggle';
   if (schema.type === 'number' || schema.type === 'integer') return 'number';
@@ -252,7 +267,7 @@ function renderField(key, schema, widget, set, host) {
     return fieldRow(schema, key, mount);
   }
 
-  // Scalar text-like inputs: text, url, number, timezone.
+  // Scalar text-like inputs: text, url, number, timezone, date, time, datetime.
   const input = document.createElement('input');
   input.className = 'field mt-2';
   input.id = id;
@@ -263,6 +278,14 @@ function renderField(key, schema, widget, set, host) {
     if (schema.maximum !== undefined) input.max = schema.maximum;
   } else if (widget === 'url') {
     input.type = 'url';
+  } else if (widget === 'date') {
+    input.type = 'date';
+  } else if (widget === 'time') {
+    input.type = 'time';
+    input.step = 1; // allow seconds, matching ISO 8601 HH:MM:SS
+  } else if (widget === 'datetime') {
+    input.type = 'datetime-local';
+    input.step = 1; // allow seconds, so the value is a full ISO 8601 instant
   } else {
     input.type = 'text';
   }
