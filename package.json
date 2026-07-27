@@ -13,10 +13,10 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@fontsource/open-sans": "^5.2.5",
-    "@fontsource/space-grotesk": "^5.2.10",
-    "@fontsource/space-mono": "^5.2.9",
-    "@sentry/browser": "^10.62.0",
+    "@fontsource/open-sans": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@fontsource/space-mono": "^5.3.0",
+    "@sentry/browser": "^10.68.0",
     "clipboard": "^2.0.11"
   },
   "devDependencies": {
