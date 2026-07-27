@@ -20,15 +20,15 @@
     "clipboard": "^2.0.11"
   },
   "devDependencies": {
-    "@eslint/js": "^9.0.0",
-    "@iconify-json/lucide": "^1.2.115",
+    "@eslint/js": "^10.0.1",
+    "@iconify-json/lucide": "^1.2.120",
     "@iconify/tailwind4": "^1.2.3",
-    "@tailwindcss/postcss": "^4.3.1",
-    "eslint": "^9.0.0",
-    "globals": "^15.0.0",
-    "playwright": "^1.61.1",
-    "postcss": "^8.5.15",
+    "@tailwindcss/postcss": "^4.3.3",
+    "eslint": "^10.8.0",
+    "globals": "^17.8.0",
+    "playwright": "^1.62.0",
+    "postcss": "^8.5.23",
     "postcss-cli": "^11.0.1",
-    "tailwindcss": "^4.3.1"
+    "tailwindcss": "^4.3.3"
   }
 }
