@@ -2,11 +2,8 @@ name: Deploy
 
 on:
   push:
-    branches:
-      - production
-  pull_request:
-    branches:
-      - production
+    tags:
+      - '[0-9][0-9][0-9][0-9].*'
 
 env:
   HUGO_VERSION: 0.157.0
@@ -44,9 +41,8 @@ jobs:
         run: hugo --gc --minify --baseURL "https://signage-apps.com/"
 
       - name: Publish
-        if: github.event_name != 'pull_request'
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy public --project-name=app-store-production --branch=${{ github.ref_name }}
+          command: pages deploy public --project-name=app-store-production --branch=production
