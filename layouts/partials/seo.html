@@ -50,6 +50,28 @@
             "sameAs" (slice .Site.Params.social.github .Site.Params.social.linkedin)
             | jsonify (dict "indent" "  ") | safeJS }}
         </script>
+        {{- else if .IsSection }}
+        {{- /* Hubs (/rss/, /examples/) list apps, they are not an app themselves. */ -}}
+        <script type="application/ld+json">
+        {{- dict
+            "@context" "https://schema.org"
+            "@type" "CollectionPage"
+            "name" $title
+            "description" $desc
+            "url" .Permalink
+            "isPartOf" (dict "@type" "WebSite" "name" .Site.Title "url" .Site.BaseURL)
+            "publisher" (dict "@type" "Organization" "name" .Site.Params.brand "url" .Site.BaseURL)
+            | jsonify (dict "indent" "  ") | safeJS }}
+        </script>
+        <script type="application/ld+json">
+        {{- dict
+            "@context" "https://schema.org"
+            "@type" "BreadcrumbList"
+            "itemListElement" (slice
+                (dict "@type" "ListItem" "position" 1 "name" "Home" "item" .Site.BaseURL)
+                (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink))
+            | jsonify (dict "indent" "  ") | safeJS }}
+        </script>
         {{- else }}
         <script type="application/ld+json">
         {{- dict
