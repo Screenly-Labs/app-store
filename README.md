@@ -47,6 +47,15 @@ The site is then available at http://127.0.0.1:8080
 * **Fonts** (Space Grotesk, Space Mono, Open Sans) are self-hosted from the
   Bun-managed `@fontsource/*` packages, no remote font requests.
 
+## Adding a new app
+
+The app code is copied from an existing app repo. The GitHub configuration around
+it is not, and one step — the **tag deployment policy** — will fail the first
+release if it is missed. See [`docs/new-app-setup.md`](docs/new-app-setup.md).
+
+Each app describes its own settings in a manifest; see
+[`docs/app-manifest.md`](docs/app-manifest.md).
+
 ## Deployment
 
 Pushes to `master` deploy to the staging Cloudflare Pages project and pushes to
