@@ -1,0 +1,38 @@
+{{ define "main" }}
+<section class="wrap py-12 sm:py-16">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="transition-colors hover:text-ink" href="{{ "/" | relURL }}">Home</a>
+        <span aria-hidden="true">/</span>
+        <span class="text-dim">{{ .Title }}</span>
+    </nav>
+
+    <h1 class="mt-2 text-4xl sm:text-5xl">{{ .Title }}</h1>
+
+    {{ with .Content }}
+    <div class="app-copy mt-6 max-w-2xl">
+        {{ . }}
+    </div>
+    {{ end }}
+
+    <div class="app-grid mt-12">
+        {{ range .Pages.ByTitle }}
+        {{ $meta := partialCached "app-meta.html" . .RelPermalink }}
+        <a class="card-screen reveal" href="{{ .RelPermalink }}" data-categories="{{ $meta.tagsCsv }}">
+            <div class="card-screen__media">
+                {{ with $meta.image }}
+                {{ partial "optimg.html" (dict "src" (printf "img/%s" .) "alt" $meta.title "widths" (slice 400 800) "sizes" "(min-width:1024px) 360px, (min-width:640px) 45vw, 90vw") }}
+                {{ else }}
+                {{ partial "app-placeholder.html" (dict "title" $meta.title "tag" $meta.tag0) }}
+                {{ end }}
+            </div>
+            <div class="card-screen__body">
+                <span class="tag">{{ $meta.tag0 }}</span>
+                <h3 class="mt-2 text-xl">{{ $meta.title }}</h3>
+                <p class="mt-1 text-sm text-dim">{{ $meta.cardtext }}</p>
+                <span class="mt-4 link-accent text-sm">Get app {{ partial "icon.html" "arrow-right" }}</span>
+            </div>
+        </a>
+        {{ end }}
+    </div>
+</section>
+{{ end }}

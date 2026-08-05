@@ -4,8 +4,10 @@ title = "Free Digital Signage Apps"
 enableRobotsTXT = true
 enableGitInfo = true
 
-# No blog/taxonomies/section listings on this site. Keep the output minimal.
-disableKinds = ["taxonomy", "term", "rss", "section"]
+# No blog/taxonomies/feeds on this site. Keep the output minimal. Section pages
+# stay enabled so the curated hubs (/rss/, /examples/) can render; a section that
+# should not get a listing opts out with `_build.render` in its own `_index.md`.
+disableKinds = ["taxonomy", "term", "rss"]
 
 # Emit /manifest.json alongside the home page: a pointers-only index of every
 # app's self-hosted manifest (see docs/app-manifest.md).

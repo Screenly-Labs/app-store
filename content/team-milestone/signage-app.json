@@ -2,7 +2,7 @@
   "manifestVersion": "1",
   "id": "team-milestone",
   "name": "Team Milestone",
-  "description": "A full-screen team-milestone celebration for digital signage. Puts a named team's milestone front and centre — a big value like \"5 Years\", \"1,000,000 Users\", or \"Project Shipped\" — with an optional caption, a message, and a date, all under a shower of confetti. Everything arrives in the launch URL, so one deployment celebrates any team's win.",
+  "description": "A full-screen team-milestone celebration for digital signage. Puts a named team's milestone front and centre: a big value like \"5 Years\", \"1,000,000 Users\", or \"Project Shipped\", with an optional caption, a message, and a date, all under a shower of confetti. Everything arrives in the launch URL, so one deployment celebrates any team's win.",
   "summary": "Celebrate a team's milestone on any display.",
   "vendor": "Screenly",
   "tags": ["Celebration", "Team", "Business"],
