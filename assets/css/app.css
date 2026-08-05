@@ -425,3 +425,28 @@
     will-change: opacity;
   }
 }
+
+/* App detail long-form copy (SEO body): rendered from a page's Markdown/HTML
+   body by layouts/_default/single.html. Plain semantic HTML in content pages
+   picks up this styling — no per-element utility classes needed. */
+.app-copy { max-width: 65ch; }
+.app-copy > :first-child { margin-top: 0; }
+.app-copy h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem; line-height: 1.2;
+  color: var(--color-ink);
+  margin: 2.25rem 0 0.6rem;
+}
+.app-copy h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem; line-height: 1.25;
+  color: var(--color-ink);
+  margin: 1.6rem 0 0.4rem;
+}
+.app-copy p { color: var(--color-dim); line-height: 1.7; margin: 0.75rem 0; }
+.app-copy ul { color: var(--color-dim); line-height: 1.7; margin: 0.75rem 0; padding-left: 1.25rem; list-style: disc; }
+.app-copy li { margin: 0.3rem 0; }
+.app-copy li::marker { color: var(--color-accent); }
+.app-copy a { color: var(--color-accent2); }
+.app-copy a:hover { text-decoration: underline; }
+.app-copy strong { color: var(--color-ink); }

@@ -1,7 +1,10 @@
 {{- /* SEO meta: canonical, description, Open Graph, Twitter cards, JSON-LD. */ -}}
 {{- $meta := partialCached "app-meta.html" . .RelPermalink -}}
-{{- $title := cond .IsHome (printf "%s for Any Screen" .Site.Title) (printf "%s - %s" $meta.title .Site.Title) -}}
-{{- $desc := or $meta.description .Site.Params.description -}}
+{{- /* seotitle / metadescription front-matter overrides let a page set
+     keyword-optimised SEO copy without editing its remote signage-app manifest
+     (which drives the on-page title/description). Falls back to the manifest. */ -}}
+{{- $title := cond .IsHome (printf "%s for Any Screen" .Site.Title) (or .Params.seotitle (printf "%s - %s" $meta.title .Site.Title)) -}}
+{{- $desc := or .Params.metadescription $meta.description .Site.Params.description -}}
 
 {{- /* Build a correctly-sized (1200x630) social share image from the page's image. */ -}}
 {{- $ogsrc := .Site.Params.ogimage -}}
