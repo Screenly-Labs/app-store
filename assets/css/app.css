@@ -428,7 +428,7 @@
 
 /* App detail long-form copy (SEO body): rendered from a page's Markdown/HTML
    body by layouts/_default/single.html. Plain semantic HTML in content pages
-   picks up this styling — no per-element utility classes needed. */
+   picks up this styling, so no per-element utility classes are needed. */
 .app-copy { max-width: 65ch; }
 .app-copy > :first-child { margin-top: 0; }
 .app-copy h2 {
