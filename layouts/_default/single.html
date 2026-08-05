@@ -60,5 +60,11 @@
             </div>
         </div>
     </div>
+
+    {{ with .Content }}
+    <div class="app-copy mt-12 lg:mt-16">
+        {{ . }}
+    </div>
+    {{ end }}
 </section>
 {{ end }}
