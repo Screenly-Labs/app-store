@@ -1,0 +1,59 @@
+---
+title: "Screenly Cast for WordPress"
+description: "A WordPress plugin that renders your posts, pages and images for digital signage. Point a screen at a page you already publish and it shows a version built to be read from across the room, without touching your theme."
+cardtext: "Turn the WordPress site you already run into digital signage."
+masonry: "WordPress, Publishing"
+weight: 15
+app:
+  image: app-screenly-cast.png
+install:
+  url: "https://wordpress.org/plugins/screenly-cast/"
+  label: "Get it on WordPress.org"
+  note: "This one is a WordPress plugin rather than a link you paste into a player. Install it on your site, and the URL a screen points at is your own page."
+links:
+  source: "https://github.com/Screenly-Labs/Screenly-Cast-for-WordPress"
+  support: "https://github.com/Screenly-Labs/Screenly-Cast-for-WordPress/issues"
+seotitle: "WordPress Digital Signage Plugin | Screenly Cast"
+metadescription: "Turn WordPress posts and pages into digital signage. A free WordPress plugin that renders your content for any screen, with Anthias, Screenly, or any player."
+---
+
+<h2>Publish once, and it reads on a wall</h2>
+<p>Every other app in this library is a link you paste into a player. This one is different: it is a plugin for the WordPress site you already run. Install it, and any post, page or image you publish can also be shown on a screen, without writing the content twice or keeping a second system in step.</p>
+<p>It deliberately does not try to turn WordPress into a signage CMS. There are no zones, no playlists and no feeds. It takes something you have already published and renders it so it can be read by somebody standing several metres away who is not holding a mouse.</p>
+
+<h2>The same post, twice</h2>
+<p>A normal page is built for a reader with a cursor: navigation, byline, comments, sharing buttons, next and previous links. On a wall, all of that is noise competing with the one thing you wanted to say.</p>
+{{< screenshot src="screenly-cast-before.png" alt="An ordinary WordPress post in a browser, with navigation, byline, comments and next and previous links" caption="An ordinary post as a visitor sees it." >}}
+{{< screenshot src="app-screenly-cast.png" alt="The same WordPress post rendered for digital signage: large title, short body and featured image, with no navigation or comments" caption="The same post rendered for a screen. Same content, nothing that assumes somebody is holding a mouse." >}}
+<p>A signage render is the title, the date, a short body, and the featured image if the post has one. Everything that assumes an interactive visitor is removed.</p>
+
+<h2>Your theme is never touched</h2>
+<p>A signage request renders through the plugin's own template, for that one request. Your active theme, and what every other visitor sees, is completely unaffected.</p>
+
+<h2>Built for real screens</h2>
+<ul>
+  <li><strong>Fits the screen.</strong> Content is trimmed to what actually fits at the resolution the screen actually is. A screen cannot scroll and nobody is there to try.</li>
+  <li><strong>Every resolution, both orientations.</strong> Correct from an 800x480 Raspberry Pi Touch Display up to 4K, landscape and portrait, with nothing to configure.</li>
+  <li><strong>Works on old players.</strong> Signage hardware runs years behind the desktop, so the stylesheet is compiled down to a Chrome 87 baseline and older players get a reduced-motion mode rather than a broken layout.</li>
+  <li><strong>No external requests.</strong> Fonts ship with the plugin. Nothing is fetched from a CDN, which matters for privacy and because a player is frequently offline.</li>
+  <li><strong>Not indexed.</strong> Signage renders are marked noindex, so they never compete with your real pages in search.</li>
+</ul>
+{{< screenshot src="screenly-cast-portrait.png" alt="The same signage render in portrait orientation on a tall display" caption="The same layout in portrait. Both orientations work with nothing to configure." >}}
+
+<h2>Nothing to remember</h2>
+<p>Point a screen at an ordinary page URL. Signage players are recognised from their request and sent to the signage view of whatever they asked for, so there is usually nothing to append.</p>
+<p>Adding <code>?srly</code> to a URL still works and always wins, which is how you preview a signage render in your own browser.</p>
+{{< screenshot src="screenly-cast-settings.png" alt="The Screenly Cast settings screen in WordPress, showing a logo option and a toggle for recognising signage players" caption="The whole settings screen: a logo, and whether to recognise signage players." >}}
+
+<h2>Where it fits</h2>
+<p>Most of these are some form of <a href="/digital-notice-board/">digital notice board</a>, which is the job a screen on a wall usually turns out to be doing.</p>
+<ul>
+  <li>A digital notice board in a school, an office or a community centre</li>
+  <li>Opening hours, specials or a menu in a cafe</li>
+  <li>A lobby or reception display fed by the site you already update</li>
+  <li>A Raspberry Pi in kiosk mode showing whatever you published this morning</li>
+</ul>
+
+<h2>How to add Screenly Cast</h2>
+<p>Install the plugin from <a href="https://wordpress.org/plugins/screenly-cast/">WordPress.org</a> or by searching for Screenly Cast in your WordPress admin, then activate it. Optionally pick a logo under Settings, Screenly Cast, shown in the corner of every render. Then add one of your page URLs as content in <a href="https://anthias.screenly.io/?utm_source=signage-apps.com&amp;utm_medium=referral&amp;utm_campaign=screenly-cast">Anthias</a> (free and open-source), Screenly, or any web-capable signage player.</p>
+<p>Because a signage render is just a URL, it works the same way on any player, wallboard or browser kiosk that can open a web page.</p>

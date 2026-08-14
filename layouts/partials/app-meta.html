@@ -15,6 +15,16 @@
     manifestRaw raw manifest JSON string (property order preserved), or ""
     title description cardtext url source support image
     tags (slice)  tagsCsv (string)  tag0 (string)  appconfig (bool)
+    install     front-matter `install:` map, or false
+
+  `install` is how the store carries something that is NOT a paste-a-link app.
+  Every other app here is a URL you copy into a player, so the detail page offers
+  the link, a copy button and a live preview. A WordPress plugin has none of
+  those: it is installed into a site, and the URL you point a screen at is the
+  customer's own page. Such a page sets `install:` instead of `app.url`, and the
+  layout swaps the link block for an install call to action. It is deliberately
+  never derived from a manifest: a manifest requires `launch.baseUrl`, which is
+  exactly the thing these apps do not have.
 
   See docs/app-manifest.md.
 */ -}}
@@ -80,6 +90,7 @@
       "tagsCsv"     (delimit $tags ", ")
       "tag0"        (cond (gt (len $tags) 0) (index $tags 0) "App")
       "appconfig"   (ne (index $m "settings") nil)
+      "install"     false
   -}}
 {{- else -}}
   {{- $masonry := or $p.Params.masonry "" -}}
@@ -102,6 +113,7 @@
       "tagsCsv"     $masonry
       "tag0"        (cond (gt (len $tags) 0) (index $tags 0) "App")
       "appconfig"   (eq $p.Params.appconfig true)
+      "install"     (or $p.Params.install false)
   -}}
 {{- end -}}
 {{- return $out -}}

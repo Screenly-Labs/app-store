@@ -450,3 +450,18 @@
 .app-copy a { color: var(--color-accent2); }
 .app-copy a:hover { text-decoration: underline; }
 .app-copy strong { color: var(--color-ink); }
+
+/* Captioned screenshot inside body copy (the `screenshot` shortcode). Sits inside the
+   65ch text column: escaping it would need negative margins and buys little, since these
+   are illustrations beside the prose rather than the page's hero image. */
+.app-copy .app-shot { margin: 1.75rem 0; }
+.app-copy .app-shot img {
+  width: 100%; height: auto; display: block;
+  border: 1px solid var(--color-line-2);
+  border-radius: 0.75rem;
+}
+.app-copy .app-shot figcaption {
+  color: var(--color-faint);
+  font-size: 0.8125rem; line-height: 1.5;
+  margin-top: 0.5rem;
+}

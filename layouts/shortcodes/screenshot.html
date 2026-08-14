@@ -1,0 +1,31 @@
+{{- /*
+  A captioned screenshot inside an app's body copy, run through Hugo's image
+  pipeline so it ships as responsive webp like every other image on the site.
+
+  Exists because a raw <img> in content would bypass that pipeline entirely and
+  serve a full-size PNG. Body screenshots are lazy-loaded: the hero image above
+  the fold is the eager one.
+
+  Params:
+    src     (required) file under assets/img/, e.g. "screenly-cast-before.png"
+    alt     (required) alt text
+    caption (optional) visible caption
+
+  Usage:
+    {{< screenshot src="screenly-cast-before.png" alt="..." caption="..." >}}
+*/ -}}
+{{- $src := .Get "src" -}}
+{{- $alt := .Get "alt" -}}
+{{- if not $src }}{{ errorf "screenshot: src is required (%s)" .Position }}{{ end -}}
+{{- if not $alt }}{{ errorf "screenshot: alt is required, for %q (%s)" $src .Position }}{{ end -}}
+{{- if not (resources.Get (printf "img/%s" $src)) }}{{ errorf "screenshot: assets/img/%s not found (%s)" $src .Position }}{{ end -}}
+<figure class="app-shot">
+  {{ partial "optimg.html" (dict
+      "src" (printf "img/%s" $src)
+      "alt" $alt
+      "widths" (slice 640 960 1280)
+      "sizes" "(min-width:1024px) 62vw, 92vw") }}
+  {{- with .Get "caption" }}
+  <figcaption>{{ . }}</figcaption>
+  {{- end }}
+</figure>
