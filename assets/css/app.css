@@ -451,6 +451,34 @@
 .app-copy a:hover { text-decoration: underline; }
 .app-copy strong { color: var(--color-ink); }
 
+/* ----------------------------------------------------------------------------
+   Topic hub (layouts/_default/list.html)
+---------------------------------------------------------------------------- */
+
+/* The lede is the one place a narrow measure is correct, so it keeps one. Everything
+   else on a hub is a parallel set and gets the full width. */
+.hub-lede { @apply max-w-xl text-lg leading-relaxed text-dim; }
+.hub-lede > :first-child { margin-top: 0; }
+.hub-lede p { @apply mt-4; }
+.hub-lede strong { @apply text-ink; }
+.hub-lede a { color: var(--color-accent2); }
+.hub-lede a:hover { @apply underline; }
+
+/* Hairline-separated tile rather than a filled panel, so a page of them stays quiet and the
+   filled `.panel` still means "this one is a distinct thing". */
+.hub-tile { @apply border-t border-line pt-5 transition-colors; }
+.hub-tile:hover { border-color: var(--color-line-2); }
+.hub-tile__title { @apply font-display text-xl text-ink; }
+.hub-tile__body { @apply mt-2 text-[0.9375rem] leading-relaxed text-dim; }
+.hub-tile__body p { @apply mt-2; }
+.hub-tile__body > :first-child { margin-top: 0; }
+.hub-tile__body strong { @apply text-ink; }
+.hub-tile__body a { color: var(--color-accent2); }
+.hub-tile__body a:hover { @apply underline; }
+
+/* Alternating band, matching the homepage rhythm. */
+.band { @apply border-y border-line bg-bg-2; }
+
 /* Captioned screenshot inside body copy (the `screenshot` shortcode). Sits inside the
    65ch text column: escaping it would need negative margins and buys little, since these
    are illustrations beside the prose rather than the page's hero image. */

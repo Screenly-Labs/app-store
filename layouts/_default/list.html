@@ -1,34 +1,114 @@
 {{- /*
-  Generic section listing: breadcrumb, title, body copy, then the app grid.
+  Topic hub layout.
 
-  Hugo resolves layouts/<section>/list.html first, so /rss/ and /examples/ keep
-  their own templates and this only serves sections that do not have one. It
-  exists so a new topic hub is a content file plus nothing else.
+  Hugo resolves layouts/<section>/list.html first, so /rss/ and /examples/ keep their own
+  templates and this serves sections without one.
 
-  Sections are the right shape for a hub: a section's `_index.md` is not a
-  RegularPage, so it stays out of the homepage grid, the hero slideshow and
-  /manifest.json automatically, none of which should list a topic page as if it
-  were an app.
+  WHY IT IS NOT A SINGLE COLUMN. The first version of this dumped the whole markdown body into
+  a 65ch measure, which used 41% of the width on a 1440px screen and left the rest empty. Worse,
+  it flattened content that is not sequential: a hub's audience cases are parallel alternatives
+  ("which of these is you"), and stacking them vertically reads as steps in a process. So the
+  parallel sets live in front matter as data and render side by side, and only the lede stays as
+  prose, where a narrow measure is the right thing.
+
+  Front matter, all optional, so a bare section still renders as lede plus the app grid:
+    board:    slice of page paths whose app screenshots cycle in the hero preview
+    includes: slice of {title, body} for the "what goes on it" tiles
+    cases:    slice of {title, body} for the parallel audience panels, plus optional `eyebrow`
+    closing:  slice of {title, body} for the final pair
+  Each `body` is rendered through markdownify so links work.
 */ -}}
 {{ define "main" }}
-<section class="wrap py-12 sm:py-16">
-    <nav class="breadcrumbs" aria-label="Breadcrumb">
-        <a class="transition-colors hover:text-ink" href="{{ "/" | relURL }}">Home</a>
-        <span aria-hidden="true">/</span>
-        <span class="text-dim">{{ .Title }}</span>
-    </nav>
 
-    <h1 class="mt-2 text-4xl sm:text-5xl">{{ .Title }}</h1>
+{{- /* Hero: the lede at a readable measure beside a preview of the thing itself. The preview is
+     built from real app screenshots rather than an illustration, so the page demonstrates a
+     notice board instead of describing one. */ -}}
+<section class="hero">
+    <div class="wrap grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
+        <div>
+            <nav class="breadcrumbs" aria-label="Breadcrumb">
+                <a class="transition-colors hover:text-ink" href="{{ "/" | relURL }}">Home</a>
+                <span aria-hidden="true">/</span>
+                <span class="text-dim">{{ .Title }}</span>
+            </nav>
 
-    {{ with .Content }}
-    <div class="app-copy mt-6 max-w-2xl">
-        {{ . }}
+            <h1 class="mt-4 text-4xl leading-[1.05] sm:text-5xl xl:text-6xl">{{ .Title }}</h1>
+
+            {{ with .Content }}
+            <div class="hub-lede mt-6">{{ . }}</div>
+            {{ end }}
+        </div>
+
+        {{- /* The preview cycles real app screenshots in one screen-shaped frame, reusing the
+             homepage's slideshow rather than a bespoke mosaic. An earlier version tiled three
+             tiles at once, but a lead tile spanning two rows cannot also be 16:9, so the notice
+             was always cropped illegibly. One frame at a time shows the same "a board can hold
+             any of these" idea and every frame is actually readable. */ -}}
+        {{ with .Params.board }}
+        {{ $pages := slice }}
+        {{ range . }}
+          {{ with $.Site.GetPage . }}{{ $pages = $pages | append . }}{{ end }}
+        {{ end }}
+        {{ with $pages }}
+        <div class="overflow-hidden rounded-2xl border border-line-2 shadow-2xl" style="box-shadow:0 40px 80px -30px rgb(122 90 248 / 45%)">
+            {{ partial "hero-slideshow.html" (dict "pages" .) }}
+        </div>
+        {{ end }}
+        {{ end }}
     </div>
-    {{ end }}
+</section>
 
-    {{/* Apps only. The curated feed pages have their own hub at /rss/, and listing
-         all of them here would drown the apps and duplicate that page. */}}
-    <div class="app-grid mt-12">
+{{- /* What goes on it: tiles instead of a bulleted list, because each one is a jumping-off point
+     to real apps and a list buries the links. */ -}}
+{{ with .Params.includes }}
+<section class="wrap py-12 sm:py-16">
+    <p class="eyebrow">What goes on it</p>
+    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {{ range . }}
+        <div class="hub-tile">
+            <h2 class="hub-tile__title">{{ .title }}</h2>
+            <div class="hub-tile__body">{{ .body | markdownify }}</div>
+        </div>
+        {{ end }}
+    </div>
+</section>
+{{ end }}
+
+{{- /* Audience cases, side by side because they are alternatives rather than an order. */ -}}
+{{ with .Params.cases }}
+<section class="band">
+    <div class="wrap py-12 sm:py-16">
+        <p class="eyebrow">{{ $.Params.casesEyebrow | default "Where it goes" }}</p>
+        <div class="mt-8 grid gap-5 lg:grid-cols-3">
+            {{ range . }}
+            <div class="panel">
+                <h2 class="text-2xl">{{ .title }}</h2>
+                <div class="hub-tile__body mt-3 flex-1">{{ .body | markdownify }}</div>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+</section>
+{{ end }}
+
+{{ with .Params.closing }}
+<section class="wrap py-12 sm:py-16">
+    <div class="grid gap-5 lg:grid-cols-2">
+        {{ range . }}
+        <div class="hub-tile">
+            <h2 class="hub-tile__title">{{ .title }}</h2>
+            <div class="hub-tile__body">{{ .body | markdownify }}</div>
+        </div>
+        {{ end }}
+    </div>
+</section>
+{{ end }}
+
+<section id="apps" class="wrap scroll-mt-20 pb-16 sm:pb-20">
+    <p class="eyebrow">The library</p>
+    {{/* Apps only. The curated feed pages have their own hub at /rss/, and listing all of them
+         here would drown the apps and duplicate that page. */}}
+    <div class="app-grid mt-8">
         {{ range (where .Site.RegularPages "Section" "!=" "rss").ByWeight }}
         {{ partial "app-card.html" . }}
         {{ end }}
