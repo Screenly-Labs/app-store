@@ -5,6 +5,9 @@
      (which drives the on-page title/description). Falls back to the manifest. */ -}}
 {{- $title := cond .IsHome (printf "%s for Any Screen" .Site.Title) (or .Params.seotitle (printf "%s - %s" $meta.title .Site.Title)) -}}
 {{- $desc := or .Params.metadescription $meta.description .Site.Params.description -}}
+{{- /* An install app runs inside its host platform; the paste-a-link apps run on the
+     players themselves. */ -}}
+{{- $os := cond (not (not $meta.install)) "WordPress" "Web, Anthias, Screenly" -}}
 
 {{- /* Build a correctly-sized (1200x630) social share image from the page's image. */ -}}
 {{- $ogsrc := .Site.Params.ogimage -}}
@@ -80,7 +83,7 @@
             "name" $meta.title
             "description" $desc
             "applicationCategory" "BusinessApplication"
-            "operatingSystem" "Web, Anthias, Screenly"
+            "operatingSystem" $os
             "url" .Permalink
             "image" $ogimage
             "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD")

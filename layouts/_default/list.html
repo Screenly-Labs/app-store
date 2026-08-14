@@ -1,0 +1,37 @@
+{{- /*
+  Generic section listing: breadcrumb, title, body copy, then the app grid.
+
+  Hugo resolves layouts/<section>/list.html first, so /rss/ and /examples/ keep
+  their own templates and this only serves sections that do not have one. It
+  exists so a new topic hub is a content file plus nothing else.
+
+  Sections are the right shape for a hub: a section's `_index.md` is not a
+  RegularPage, so it stays out of the homepage grid, the hero slideshow and
+  /manifest.json automatically, none of which should list a topic page as if it
+  were an app.
+*/ -}}
+{{ define "main" }}
+<section class="wrap py-12 sm:py-16">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="transition-colors hover:text-ink" href="{{ "/" | relURL }}">Home</a>
+        <span aria-hidden="true">/</span>
+        <span class="text-dim">{{ .Title }}</span>
+    </nav>
+
+    <h1 class="mt-2 text-4xl sm:text-5xl">{{ .Title }}</h1>
+
+    {{ with .Content }}
+    <div class="app-copy mt-6 max-w-2xl">
+        {{ . }}
+    </div>
+    {{ end }}
+
+    {{/* Apps only. The curated feed pages have their own hub at /rss/, and listing
+         all of them here would drown the apps and duplicate that page. */}}
+    <div class="app-grid mt-12">
+        {{ range (where .Site.RegularPages "Section" "!=" "rss").ByWeight }}
+        {{ partial "app-card.html" . }}
+        {{ end }}
+    </div>
+</section>
+{{ end }}

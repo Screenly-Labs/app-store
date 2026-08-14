@@ -17,6 +17,23 @@
             <h1 class="mt-2 text-4xl sm:text-5xl">{{ $meta.title }}</h1>
             <p class="mt-4 text-lg text-dim">{{ $meta.description }}</p>
 
+            {{- /* Two shapes of app. Most are a URL you copy into a player, so the page hands
+                 you the link, a copy button and a live preview. An `install:` app is installed
+                 into something you already run (a WordPress site), and the URL a screen points
+                 at is your own page, so none of those three controls has anything to refer to.
+                 Offering them anyway would tell the visitor to paste a link that is not theirs
+                 into a player, which is worse than offering nothing. */ -}}
+            {{ if $meta.install }}
+            <div class="mt-8">
+                <p class="text-dim">{{ $meta.install.note }}</p>
+            </div>
+
+            <div class="mt-5 flex flex-wrap gap-3">
+                <a class="btn-primary" href="{{ $meta.install.url }}" target="_blank" rel="noopener">
+                    {{ $meta.install.label | default "Install" }} {{ partial "icon.html" "external-link" }}
+                </a>
+            </div>
+            {{ else }}
             <div class="mt-8">
                 <label class="eyebrow" for="app-form-url">App link</label>
                 <input class="field mt-2" id="app-form-url" type="text" data-url="{{ $meta.url }}" value="{{ $meta.url }}" readonly>
@@ -53,6 +70,7 @@
                     Live preview {{ partial "icon.html" "external-link" }}
                 </a>
             </div>
+            {{ end }}
 
             <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
                 {{ with $meta.support }}<a class="link-accent" href="{{ . }}" target="_blank" rel="noopener">Support</a>{{ end }}

@@ -1,0 +1,25 @@
+{{- /*
+  One app card for a grid. Takes the page.
+
+  Extracted because this markup was duplicated between the homepage grid and the
+  /examples/ hub, and a third copy was about to be added. Card CTA wording is part
+  of the card, so it only has to be right in one place: "Get app" is wrong for an
+  `install:` app, which is installed into a platform rather than pasted into a
+  player.
+*/ -}}
+{{- $meta := partialCached "app-meta.html" . .RelPermalink -}}
+<a class="card-screen reveal" href="{{ .RelPermalink }}" data-categories="{{ $meta.tagsCsv }}">
+    <div class="card-screen__media">
+        {{ with $meta.image }}
+        {{ partial "optimg.html" (dict "src" (printf "img/%s" .) "alt" $meta.title "widths" (slice 400 800) "sizes" "(min-width:1024px) 360px, (min-width:640px) 45vw, 90vw") }}
+        {{ else }}
+        {{ partial "app-placeholder.html" (dict "title" $meta.title "tag" $meta.tag0) }}
+        {{ end }}
+    </div>
+    <div class="card-screen__body">
+        <span class="tag">{{ $meta.tag0 }}</span>
+        <h3 class="mt-2 text-xl">{{ $meta.title }}</h3>
+        <p class="mt-1 text-sm text-dim">{{ $meta.cardtext }}</p>
+        <span class="mt-4 link-accent text-sm">{{ if $meta.install }}Get plugin{{ else if $meta.appconfig }}Configure{{ else }}Get app{{ end }} {{ partial "icon.html" "arrow-right" }}</span>
+    </div>
+</a>
