@@ -22,8 +22,18 @@
   {{- $slides = $slides | append (dict "src" .src "alt" (.alt | default "")) -}}
 {{- end -}}
 {{- range .pages -}}
+  {{- /* Capture the page: inside `with .Params.app.image` the context is the image string, and
+       `$` is this partial's dict argument, so neither one can reach the page's title. It used
+       to say `$.Title`, which silently produced an empty alt on every slide, and since the
+       minifier drops `alt=""` the first slide (the only one not aria-hidden) reached screen
+       readers with no alt at all and was announced as a filename. */ -}}
+  {{- $page := . -}}
+  {{- /* The name comes from app-meta, not `.Title`: the manifest-driven app pages carry no
+       `title:` in front matter (their name lives in the remote manifest), so `.Title` is empty
+       for exactly the pages the homepage slideshow shows. */ -}}
+  {{- $meta := partialCached "app-meta.html" $page $page.RelPermalink -}}
   {{- with .Params.app.image -}}
-    {{- $slides = $slides | append (dict "src" (printf "img/%s" .) "alt" $.Title) -}}
+    {{- $slides = $slides | append (dict "src" (printf "img/%s" .) "alt" $meta.title) -}}
   {{- end -}}
 {{- end -}}
 
