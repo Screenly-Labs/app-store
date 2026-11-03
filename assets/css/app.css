@@ -274,6 +274,28 @@
   }
   .dtp__done:hover { transform: translateY(-1px); }
 
+  /* Page tools: copy as Markdown, More (layouts/partials/agent-tools.html) */
+  .agent-tools { @apply flex flex-wrap items-center gap-2; }
+  .agent-tools .is-copied { border-color: var(--color-live); }
+  .agent-tools .is-failed { border-color: #f87171; }
+  .more-menu { @apply relative; }
+  .more-menu summary { @apply cursor-pointer list-none; }
+  .more-menu summary::-webkit-details-marker { display: none; }
+  .more-menu summary > span { @apply transition-transform; }
+  .more-menu[open] summary > span { transform: rotate(180deg); }
+  .menu-pop {
+    @apply absolute left-0 z-20 mt-2 grid min-w-60 max-sm:right-0 max-sm:left-auto rounded-xl border border-line-2 bg-surface p-1.5;
+    box-shadow: 0 20px 50px -20px rgb(0 0 0 / 70%);
+  }
+  .menu-pop a,
+  .menu-pop button {
+    @apply flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-ink transition-colors;
+  }
+  .menu-pop a:hover,
+  .menu-pop button:hover { background: var(--color-surface-2); }
+  .menu-pop > * > span:first-child { @apply text-dim; }
+  .menu-pop__ext { @apply ml-auto text-faint; }
+
   /* Breadcrumbs */
   .breadcrumbs { @apply flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-faint; }
 

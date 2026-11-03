@@ -76,6 +76,8 @@
                 {{ with $meta.support }}<a class="link-accent" href="{{ . }}" target="_blank" rel="noopener">Support</a>{{ end }}
                 {{ with $meta.source }}<a class="link-accent" href="{{ . }}" target="_blank" rel="noopener">Source code</a>{{ end }}
             </div>
+
+            <div class="mt-6">{{ partial "agent-tools.html" . }}</div>
         </div>
     </div>
 

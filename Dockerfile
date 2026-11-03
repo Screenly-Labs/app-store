@@ -20,4 +20,5 @@ RUN hugo --gc --minify
 
 FROM nginx:stable-alpine AS runtime
 COPY --from=build /src/public /usr/share/nginx/html
+COPY nginx-markdown.conf /etc/nginx/conf.d/markdown.conf
 EXPOSE 80

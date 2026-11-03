@@ -7,6 +7,7 @@
     </nav>
 
     <h1 class="mt-2 text-4xl sm:text-5xl">{{ .Title }}</h1>
+    <div class="mt-5">{{ partial "agent-tools.html" . }}</div>
 
     {{ with .Content }}
     <div class="app-copy mt-6 max-w-2xl">

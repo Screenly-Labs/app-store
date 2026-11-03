@@ -33,6 +33,7 @@
             </nav>
 
             <h1 class="mt-4 text-4xl leading-[1.05] sm:text-5xl xl:text-6xl">{{ .Title }}</h1>
+            <div class="mt-5">{{ partial "agent-tools.html" . }}</div>
 
             {{ with .Content }}
             <div class="hub-lede mt-6">{{ . }}</div>

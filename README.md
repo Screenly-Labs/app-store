@@ -47,6 +47,12 @@ The site is then available at http://127.0.0.1:8080
 * **Fonts** (Space Grotesk, Space Mono, Open Sans) are self-hosted from the
   Bun-managed `@fontsource/*` packages, no remote font requests.
 
+## Pages for AI agents
+
+Every page is also built as Markdown at `index.md` (for example `/weather/index.md`),
+with an `/llms.txt` guide for agents and Copy as Markdown / Ask Claude tools on
+each page. See [`docs/agents.md`](docs/agents.md).
+
 ## Adding a new app
 
 The app code is copied from an existing app repo. The GitHub configuration around

@@ -1,0 +1,12 @@
+# Cloudflare Pages response headers (https://developers.cloudflare.com/pages/configuration/headers/).
+#
+# Every page has a Markdown copy at index.md for AI agents (docs/agents.md). It
+# says the same thing as the page, so keep it out of search results, where it
+# would compete with the HTML. Name the charset so the degree signs and dashes
+# survive in clients that would otherwise guess.
+/*.md
+  Content-Type: text/markdown; charset=utf-8
+  X-Robots-Tag: noindex
+
+/llms.txt
+  Content-Type: text/plain; charset=utf-8

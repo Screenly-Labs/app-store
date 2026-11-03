@@ -10,13 +10,24 @@ enableGitInfo = true
 disableKinds = ["taxonomy", "term", "rss"]
 
 # Emit /manifest.json alongside the home page: a pointers-only index of every
-# app's self-hosted manifest (see docs/app-manifest.md).
+# app's self-hosted manifest (see docs/app-manifest.md). Every page also has a
+# clean index.md (Hugo's built-in "markdown" format) for AI agents and the
+# "Copy as Markdown" page tool, and the site has an /llms.txt (see docs/agents.md).
 [outputs]
-  home = ["HTML", "appindex"]
+  home = ["HTML", "appindex", "markdown", "llms"]
+  section = ["HTML", "markdown"]
+  page = ["HTML", "markdown"]
 
 [outputFormats.appindex]
   mediaType = "application/json"
   baseName = "manifest"
+  isPlainText = true
+  notAlternative = true
+
+# llms.txt: a plain-text guide to the site for AI agents (llmstxt.org).
+[outputFormats.llms]
+  mediaType = "text/plain"
+  baseName = "llms"
   isPlainText = true
   notAlternative = true
 

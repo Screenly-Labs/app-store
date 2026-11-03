@@ -1,0 +1,35 @@
+{{- $apps := (where site.RegularPages "Section" "!=" "rss").ByWeight -}}
+# {{ site.Title }}
+
+> {{ site.Params.description }} Run by {{ site.Params.brand }}.
+
+Every app is a plain web page that a screen shows full-screen. To put one on a screen, paste its app link into Anthias, Screenly, or any smart TV or signage player that can show a web page. There is no account, API key or install step.
+
+Machine-readable versions of the site:
+
+- Markdown: append `index.md` to any page URL, for example {{ "weather/index.md" | absURL }}
+- App index: {{ "manifest.json" | absURL }} lists every app's manifest URL
+- Manifests: each app publishes `/.well-known/signage-app.json` on its own origin, describing its settings as JSON Schema and its launch URL as an RFC 6570 template. Schema: {{ "schemas/signage-app-manifest.schema.json" | absURL }}
+
+## Building a configured app link
+
+An app's settings go in its link's query string, in the order and with the names of its `launch.template` (for example `{?location*,locale,24h}`). Each app's Markdown page lists its settings and their values.
+
+- Leave out a setting to keep its default. Empty values, `false`, and values equal to the default are left out.
+- A setting marked `*` that is a list is repeated once per entry (`tz=Europe/London&tz=Asia/Tokyo`); one that is an object is sent as its own keys (`lat=51.5&lng=-0.12`).
+- `true` is sent as `1`.
+- Percent-encode values, except `/` and `|`, which apps read literally.
+
+## Apps
+
+{{ range $apps }}{{ partial "md-app-row.html" . }}
+{{ end }}
+## Collections
+
+{{ range site.Home.Sections.ByTitle }}{{ $s := . }}{{ with .OutputFormats.Get "markdown" }}- [{{ $s.Title }}]({{ .Permalink }}){{ with $s.Params.metadescription }}: {{ . }}{{ end }}
+{{ end }}{{ end }}
+## Optional
+
+- [Home]({{ "index.md" | absURL }}): the full app library
+- [Source code for this site](https://github.com/Screenly-Labs/app-store)
+- [Anthias](https://anthias.screenly.io/): the free, open-source digital signage player

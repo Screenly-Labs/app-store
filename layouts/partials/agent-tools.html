@@ -1,0 +1,30 @@
+{{- /*
+  Tools for people and their AI agents: copy or view the page as Markdown, open
+  it in an assistant with a ready-made question, copy the link. All static: the
+  Markdown is built next to the page as index.md (see docs/agents.md), and
+  assets/js/page-tools.js does the copying. Takes the page.
+*/ -}}
+{{- $p := . -}}
+{{- $md := ($p.OutputFormats.Get "markdown").RelPermalink -}}
+{{- $mdAbs := ($p.OutputFormats.Get "markdown").Permalink -}}
+{{- $ask := printf "Read %s and help me pick which of these apps to put on my digital signage screens. Ask me where the screen is and who sees it, then give me the app link to paste into my player." $mdAbs -}}
+{{- if $p.IsPage -}}
+  {{- $meta := partialCached "app-meta.html" $p $p.RelPermalink -}}
+  {{- $ask = printf "Read %s and help me put %s on my digital signage screen. Explain what it shows, then ask me what I want it to show and give me the finished app link to paste into my player, with the settings filled in." $mdAbs $meta.title -}}
+  {{- if $meta.install }}{{ $ask = printf "Read %s and walk me through installing %s and pointing a screen at it." $mdAbs $meta.title }}{{ end -}}
+{{- end -}}
+<div class="agent-tools" role="toolbar" aria-label="Page tools">
+    <button type="button" class="btn-ghost btn-ghost--sm" data-copy-url="{{ $md }}" data-done="Markdown copied">
+        {{ partial "icon.html" "copy" }} <span data-copy-label>Copy as Markdown</span>
+    </button>
+    <details class="more-menu">
+        <summary class="btn-ghost btn-ghost--sm">More {{ partial "icon.html" "chevron-down" }}</summary>
+        <div class="menu-pop" role="menu">
+            <a role="menuitem" href="{{ $md }}">{{ partial "icon.html" "file-text" }} View as Markdown</a>
+            <a role="menuitem" href="https://claude.ai/new?q={{ $ask | urlquery }}" target="_blank" rel="noopener">{{ partial "icon.html" "sparkles" }} Ask Claude about this <span class="menu-pop__ext" aria-hidden="true">↗</span></a>
+            <a role="menuitem" href="https://chatgpt.com/?q={{ $ask | urlquery }}" target="_blank" rel="noopener">{{ partial "icon.html" "sparkles" }} Ask ChatGPT about this <span class="menu-pop__ext" aria-hidden="true">↗</span></a>
+            <button role="menuitem" type="button" data-copy-text="{{ ($p.OutputFormats.Get "html").Permalink }}" data-done="Link copied">{{ partial "icon.html" "link" }} <span data-copy-label>Copy page link</span></button>
+        </div>
+    </details>
+    <span class="sr-only" aria-live="polite" data-copy-status></span>
+</div>

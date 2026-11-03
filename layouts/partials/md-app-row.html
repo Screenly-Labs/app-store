@@ -1,0 +1,8 @@
+{{- /* One app as a Markdown list line, for the index.md and llms.txt listings.
+     Links the page's own Markdown copy, which is what an agent should read next.
+     Takes the page; returns a string. */ -}}
+{{- $meta := partialCached "app-meta.html" . .RelPermalink -}}
+{{- $md := (.OutputFormats.Get "markdown").Permalink -}}
+{{- $line := printf "- [%s](%s): %s" $meta.title $md (or $meta.cardtext $meta.description) -}}
+{{- with $meta.url }}{{ $line = printf "%s App link: %s" $line . }}{{ end -}}
+{{- return $line -}}
