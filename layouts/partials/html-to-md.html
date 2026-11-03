@@ -1,0 +1,30 @@
+{{- /*
+  Turn a page's rendered body HTML back into Markdown for its index.md copy.
+
+  The app pages are authored as HTML, so there is no Markdown source to reuse.
+  This covers the tags the content actually uses (h2-h4, p, ul/ol/li, a, strong,
+  em, code, br) and drops any other tag, keeping its text. Root-relative links
+  become absolute so the Markdown still works once it has been copied elsewhere.
+  If content starts using another tag, add it here, or its text will lose its
+  formatting in the Markdown. Body screenshots arrive as Markdown already (see
+  shortcodes/screenshot.markdown.md). Returns a string.
+*/ -}}
+{{- $base := strings.TrimSuffix "/" site.Home.Permalink -}}
+{{- $s := string . -}}
+{{- $s = replaceRE `\s+` " " $s -}}
+{{- $s = replaceRE `(?i)<h2[^>]*>\s*(.*?)\s*</h2>` "\n\n## $1\n\n" $s -}}
+{{- $s = replaceRE `(?i)<h3[^>]*>\s*(.*?)\s*</h3>` "\n\n### $1\n\n" $s -}}
+{{- $s = replaceRE `(?i)<h4[^>]*>\s*(.*?)\s*</h4>` "\n\n#### $1\n\n" $s -}}
+{{- $s = replaceRE `(?i)<(strong|b)(\s[^>]*)?>(.*?)</(strong|b)>` "**$3**" $s -}}
+{{- $s = replaceRE `(?i)<(em|i)(\s[^>]*)?>(.*?)</(em|i)>` "*$3*" $s -}}
+{{- $s = replaceRE `(?i)<code[^>]*>(.*?)</code>` "`$1`" $s -}}
+{{- $s = replaceRE `(?i)<a\s[^>]*?href="([^"]*)"[^>]*>(.*?)</a>` "[$2]($1)" $s -}}
+{{- $s = replaceRE `\]\((/[^)]*)\)` (printf "](%s$1)" $base) $s -}}
+{{- $s = replaceRE `(?i)<br\s*/?>` "  \n" $s -}}
+{{- $s = replaceRE `(?i)<li[^>]*>` "\n- " $s -}}
+{{- $s = replaceRE `(?i)</?(ul|ol|p|div|figure|section)(\s[^>]*)?>` "\n\n" $s -}}
+{{- $s = replaceRE `<[^>]+>` "" $s -}}
+{{- $s = htmlUnescape $s -}}
+{{- $s = replaceRE `[ \t]*\n[ \t]*` "\n" $s -}}
+{{- $s = replaceRE `\n{3,}` "\n\n" $s -}}
+{{- return strings.TrimSpace $s -}}

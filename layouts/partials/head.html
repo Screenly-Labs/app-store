@@ -10,6 +10,7 @@
         <link rel="preload" as="font" type="font/woff2" href="{{ "fonts/space-grotesk/space-grotesk-latin-700-normal.woff2" | relURL }}" crossorigin>
 
         {{ partial "seo.html" . }}
+        {{ with .OutputFormats.Get "markdown" }}<link rel="alternate" type="text/markdown" href="{{ .RelPermalink }}" title="Markdown">{{ end }}
 
         <link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="any">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ "favicon-32x32.png" | relURL }}">

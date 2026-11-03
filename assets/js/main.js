@@ -3,9 +3,11 @@
 import './sentry.js';
 import { initAppGrid, initModals, initScrollClasses, initLivePreview } from './ui.js';
 import { initClipboard } from './clipboard.js';
+import { initPageTools } from './page-tools.js';
 
 initAppGrid();
 initModals();
 initScrollClasses();
 initClipboard();
 initLivePreview();
+initPageTools();

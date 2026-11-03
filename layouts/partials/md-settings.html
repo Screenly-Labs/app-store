@@ -1,0 +1,60 @@
+{{- /*
+  An app's manifest settings as Markdown: what each launch URL parameter means
+  and which values it takes, so an agent can build a configured app link without
+  the form. Parameters are listed in `launch.template` order, the order the form
+  uses. The rules for turning values into a query string are the ones in
+  assets/js/lib/expand-template.js, and llms.txt states them once for agents.
+  Takes the parsed manifest; returns a string ("" when the app has no settings).
+*/ -}}
+{{- $m := . -}}
+{{- $props := dict -}}
+{{- with $m.settings }}{{ with .properties }}{{ $props = . }}{{ end }}{{ end -}}
+{{- $tpl := $m.launch.template | default "" -}}
+{{- $out := "" -}}
+{{- if and $props $tpl -}}
+  {{- $order := slice -}}
+  {{- range split (replaceRE `^\{\?|\}$` "" $tpl) "," -}}
+    {{- $order = $order | append (strings.TrimSuffix "*" .) -}}
+  {{- end -}}
+  {{- range $k, $_ := $props }}{{ if not (in $order $k) }}{{ $order = $order | append $k }}{{ end }}{{ end -}}
+  {{- $lines := slice -}}
+  {{- range $order -}}
+    {{- $name := . -}}
+    {{- $p := index $props $name -}}
+    {{- if $p -}}
+      {{- $shape := "" -}}
+      {{- if eq $p.type "object" -}}
+        {{- $keys := slice }}{{ range $k, $_ := $p.properties }}{{ $keys = $keys | append (printf "`%s`" $k) }}{{ end -}}
+        {{- $shape = printf "an object: sent as its own %s parameters" (delimit $keys ", " " and ") -}}
+      {{- else if eq $p.type "array" -}}
+        {{- $shape = "a list: repeat the parameter once per entry" -}}
+        {{- with $p.items }}{{ with index . "x-format" }}{{ $shape = printf "%s, each formatted `%s`" $shape . }}{{ end }}{{ end -}}
+      {{- else if eq $p.type "boolean" -}}
+        {{- $shape = "on or off: `1` turns it on" -}}
+      {{- else if $p.enum -}}
+        {{- $labels := or (index $p "x-enumLabels") slice -}}
+        {{- if le (len $p.enum) 60 -}}
+          {{- $opts := slice -}}
+          {{- range $i, $v := $p.enum -}}
+            {{- $label := "" }}{{ if lt $i (len $labels) }}{{ $label = index $labels $i }}{{ end -}}
+            {{- $val := cond (eq (string $v) "") "empty" (printf "`%v`" $v) -}}
+            {{- $opts = $opts | append (cond (and $label (ne $label (string $v))) (printf "%s (%s)" $val $label) $val) -}}
+          {{- end -}}
+          {{- $shape = printf "one of %s" (delimit $opts ", ") -}}
+        {{- else -}}
+          {{- $shape = printf "one of %d values listed in the manifest" (len $p.enum) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $shape = "text" -}}
+        {{- if eq $p.format "date-time" }}{{ $shape = "an ISO 8601 date and time, for example `2026-12-31T23:59:00`" }}{{ else if eq $p.format "date" }}{{ $shape = "an ISO 8601 date" }}{{ else if eq $p.format "time" }}{{ $shape = "a 24-hour time, for example `09:30:00`" }}{{ end -}}
+        {{- if eq (index $p "x-widget") "timezone" }}{{ $shape = "an IANA time zone, for example `Europe/London`" }}{{ end -}}
+      {{- end -}}
+      {{- $line := printf "- `%s`: %s, %s." $name ($p.title | default $name) $shape -}}
+      {{- with $p.description }}{{ $line = printf "%s %s" $line . }}{{ end -}}
+      {{- with $p.default }}{{ $line = printf "%s Default `%v`." $line . }}{{ end -}}
+      {{- $lines = $lines | append $line -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $out = printf "## Settings\n\nSettings go in the app link's query string, following the URI template `%s` on %s. Leave a setting out to keep its default.\n\n%s" $tpl $m.launch.baseUrl (delimit $lines "\n") -}}
+{{- end -}}
+{{- return $out -}}
